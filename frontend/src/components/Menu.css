@@ -1,37 +1,45 @@
 .menu {
   position: fixed;
-  top: calc(56px + 12px); /* detached a bit from top bar */
-  left: var(--menu-left-offset); /* detached from left edge (variable) */
-  bottom: var(--menu-bottom-offset); /* stretch down towards bottom */
+  top: 80px;
+  /* 64px header + 16px spacing */
+  left: 16px;
+  bottom: 16px;
   width: var(--menu-width-open);
-  padding: 0.5rem 0.5rem 0.6rem; /* include bottom padding so footer sits neatly */
+  padding: 1rem 0.5rem;
+  /* Better vertical breathing room */
   /* frosted glass container */
   background: var(--menu-bg-color);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   color: var(--text-color);
   border: 1px solid var(--menu-border-color);
-  border-radius: 12px; /* full rounded card */
-  box-shadow: 0 8px 28px rgba(12, 16, 22, 0.12);
-  overflow-y: auto; /* scroll if content overflows */
+  border-radius: 12px;
+  /* full rounded card */
+  box-shadow: var(--card-shadow);
+  overflow-y: auto;
+  /* scroll if content overflows */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   transition:
-    width var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1),
+    width var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1),
     background-color var(--menu-transition-duration) ease,
-    padding-left 0.18s ease,
-    padding-right 0.18s ease;
+    padding-left var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1),
+    padding-right var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1);
   z-index: 100;
-  box-sizing: border-box; /* ensure padding/border included in width */
-  overflow-x: hidden;     /* prevent horizontal scrolling */
+  box-sizing: border-box;
+  /* ensure padding/border included in width */
+  overflow-x: hidden;
+  /* prevent horizontal scrolling */
 }
 
 /* keep the collapsed width but avoid changing inner alignment abruptly.
    Instead compute padding so the fixed icon slot (32px) is visually centered. */
 .menu.collapsed {
-  width: var(--menu-width-collapsed); /* lean bar when collapsed */
-  padding-left: 0; /* remove container padding so item padding centers icon */
+  width: var(--menu-width-collapsed);
+  /* lean bar when collapsed */
+  padding-left: 0;
+  /* remove container padding so item padding centers icon */
   padding-right: 0;
 }
 
@@ -42,14 +50,12 @@
   /* ((collapsed width) - icon width) / 2 */
   padding-left: calc((var(--menu-width-collapsed) - 32px) / 2);
   padding-right: calc((var(--menu-width-collapsed) - 32px) / 2);
-  gap: 0; /* reduce gap so label space doesn't interfere (label will be hidden) */
+  gap: 0;
+  /* reduce gap so label space doesn't interfere (label will be hidden) */
 }
 
 /* Ensure footer/settings item doesn't stretch and its icon is centered when collapsed */
-.menu.collapsed .menu-footer .menu-item {
-  width: auto;                 /* don't force full width */
-  justify-content: center;     /* center the icon (and hidden label) */
-}
+
 
 /* header */
 .menu-header {
@@ -58,7 +64,8 @@
   gap: 1rem;
   padding: 0.6rem 0.75rem;
   cursor: pointer;
-  border-bottom: none; /* remove header separator */
+  border-bottom: none;
+  /* remove header separator */
 }
 
 /* --- ICON CONTAINER --- */
@@ -101,25 +108,39 @@
 /* keep icon area fixed so items don't shift */
 .menu-header .menu-icon,
 .menu-item .menu-icon {
-  font-size: 1.5rem;        /* a bit bigger */
-  width: 32px;              /* fixed width to lock icon position */
+  font-size: 1.5rem;
+  width: 32px;
   flex: 0 0 32px;
-  text-align: center;
-  transform: translateY(4px); /* nudge icons slightly lower */
+  display: flex;
+  /* Use flex for centering */
+  align-items: center;
+  justify-content: center;
+  transform: none;
+  /* Remove manual nudge */
 }
 
 /* per-category icon colors */
 .menu-item.notes .menu-icon {
   color: var(--icon-color-notes);
 }
+
 .menu-item.tasks .menu-icon {
   color: var(--icon-color-tasks);
 }
+
 .menu-item.locked .menu-icon {
   color: var(--icon-color-locked);
 }
+
 .menu-item.trash .menu-icon {
   color: var(--icon-color-trash);
+}
+
+.menu-header .menu-icon {
+  color: var(--text-color);
+  /* Neutral color for the toggle arrow */
+  opacity: 0.7;
+  /* Subtler look */
 }
 
 /* label behavior: only opacity changes (no translate) to avoid nudging */
@@ -150,45 +171,77 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem; /* small gap so container height stays compact */
+  gap: 0.25rem;
+  /* small gap so container height stays compact */
 }
 
 /* footer anchored to the bottom of the menu */
 .menu-footer {
   margin-top: auto;
-  padding: 0.6rem 0.5rem 0.4rem; /* top + bottom padding for clear separation from edge */
-  border-top: 1px solid var(--menu-border-color); /* subtle separator */
+  padding: 0.6rem 0.5rem 0.4rem;
+  /* top + bottom padding for clear separation from edge */
+  /* subtle separator removed */
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  transition: padding-left var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1),
+    padding-right var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1);
+}
+
+.menu.collapsed .menu-footer {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .menu-footer .menu-item {
   width: 100%;
   border-top: none;
-  padding: 0.6rem 0.75rem; /* match main items to avoid extra width */
+  padding: 0.6rem 0.75rem;
+  /* match main items to avoid extra width */
   gap: 0.75rem;
-  align-items: center; /* ensure icon + label align correctly */
+  align-items: center;
+  /* ensure icon + label align correctly */
   justify-content: flex-start;
-  min-width: 0; /* allow shrinking */
+  min-width: 0;
+  /* allow shrinking */
 }
 
-.menu-item.settings .menu-icon {
-  /* keep icon color default; do not override category icon colors */
-}
 
+
+.menu-header,
 .menu-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.6rem 0.75rem; /* smaller vertical padding keeps menu height tight */
+  padding: 0.75rem 0.5rem;
+  border-radius: 0;
+  /* No border radius for open view - edge to edge */
   cursor: pointer;
-  transition: background 0.2s ease; /* only background transitions */
-  min-width: 0; /* prevent flex children from forcing overflow */
+  transition: background 0.2s ease, border-radius 0.25s ease;
+  min-width: 0;
+  margin: 0 -0.5rem;
+  /* Negative margin to extend to menu edges */
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
+/* ACTIVE STATE - Full Row Highlight */
+.menu-item.active {
+  background: #1a1a1a;
+  /* Black background */
+  color: white;
+}
+
+.menu-item.active .menu-label {
+  font-weight: 700;
+}
+
+/* Ensure icons in active state keep their original category colors */
+/* Removed the white override - icons now keep their colors */
+
 .menu-item:hover {
-  background: var(--border-color); /* subtle highlight on hover */
+  background: var(--border-color);
+  /* subtle highlight on hover */
 }
 
 /* replace abrupt collapsed rules with animated padding/centering so collapse is the reverse of open */
@@ -196,8 +249,12 @@
 .menu-header,
 .menu-item,
 .menu-footer .menu-item {
-  transition: padding-left var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1),
-              padding-right var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1);
+  transition:
+    background 0.2s ease,
+    border-radius 0.25s ease,
+    padding-left var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1),
+    padding-right var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1),
+    margin var(--menu-transition-duration) cubic-bezier(.2, .9, .2, 1);
 }
 
 /* label behavior already transitions opacity & max-width; ensure consistent hiding on collapse */
@@ -212,7 +269,9 @@
 .menu.collapsed .menu-header,
 .menu.collapsed .menu-item,
 .menu.collapsed .menu-footer .menu-item {
-  padding-left: calc((var(--menu-width-collapsed) - var(--menu-icon-size)) / 2);
-  padding-right: calc((var(--menu-width-collapsed) - var(--menu-icon-size)) / 2);
+  padding: 0.75rem;
   gap: 0;
+  margin: 0;
+  border-radius: 0;
+  /* Square when collapsed */
 }

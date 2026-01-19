@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Notes from "./pages/Notes";
 import { lightTheme } from "./theme";
 
@@ -43,6 +44,10 @@ function App() {
       <Route
         path="/login"
         element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/notes" replace />}
+      />
+      <Route
+        path="/register"
+        element={!token ? <Register /> : <Navigate to="/notes" replace />}
       />
       <Route
         path="/notes"

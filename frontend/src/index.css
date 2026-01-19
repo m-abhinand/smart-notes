@@ -7,10 +7,14 @@
   --primary-color: #646cff;
   --secondary-color: #f9f9f9;
   --border-color: #e0e0e0;
-  --menu-transition-duration: 250ms; /* Added menu transition duration */
+  --menu-transition-duration: 250ms;
+  /* Added menu transition duration */
+
+  /* card frosted-bg */
+  --card-bg-color: rgba(255, 255, 255, 0.65);
 
   /* menu frosted-bg for light theme - slightly darker so blur shows */
-  --menu-bg-color: rgba(18, 18, 18, 0.06);
+  --menu-bg-color: rgba(255, 255, 255, 0.65);
   --menu-border-color: rgba(0, 0, 0, 0.08);
 
   /* icon colors */
@@ -19,17 +23,23 @@
   --icon-color-locked: #ff6b6b;
   --icon-color-trash: #9b9b9b;
 
+  /* uniform shadows */
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
   /* menu geometry (kept as CSS variables for consistent layout) */
   --menu-left-offset: 16px;
-  --menu-gap: 36px; /* more space between menu and notes */
-  --menu-width-open: 220px; /* slightly narrower opened menu */
+  --menu-gap: 16px;
+  /* more space between menu and notes */
+  --menu-width-open: 220px;
+  /* slightly narrower opened menu */
   --menu-width-collapsed: 56px;
   --menu-icon-size: 36px;
   --menu-highlight-color: var(--primary-color);
   /* space from bottom of viewport so menu is slightly detached */
   --menu-bottom-offset: 16px;
 
-  font-family: "Space Mono", monospace; /* Set Space Mono as the default font */
+  font-family: "Space Mono", monospace;
+  /* Set Space Mono as the default font */
   line-height: 1.5;
   font-weight: 400;
 
@@ -50,9 +60,12 @@
   --secondary-color: #1a1a1a;
   --border-color: #333333;
 
+  /* card frosted-bg */
+  --card-bg-color: rgba(24, 24, 24, 0.6);
+
   /* menu frosted-bg for dark theme - slightly darker so blur shows */
-  --menu-bg-color: rgba(24, 24, 24, 0.72);
-  --menu-border-color: rgba(255, 255, 255, 0.04);
+  --menu-bg-color: rgba(24, 24, 24, 0.6);
+  --menu-border-color: rgba(255, 255, 255, 0.1);
 
   /* icon colors in dark mode (tuned for contrast) */
   --icon-color-notes: #f8d66b;
@@ -66,17 +79,25 @@ a {
   color: var(--primary-color);
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: "Space Mono", monospace; /* Apply Space Mono to the body */
+  font-family: "Space Mono", monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 h1 {
@@ -95,9 +116,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -108,9 +131,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }

@@ -43,9 +43,9 @@ export default function Menu({ onSelectCategory, onCollapseChange }) {
         aria-label={collapsed ? "Expand menu" : "Collapse menu"}
       >
         {collapsed ? (
-          <TbChevronRight className="menu-icon" />
+          <div className="menu-icon"><TbChevronRight /></div>
         ) : (
-          <TbChevronLeft className="menu-icon" />
+          <div className="menu-icon"><TbChevronLeft /></div>
         )}
         <span className={`menu-label ${collapsed ? "hidden" : ""}`}>Menu</span>
       </div>

@@ -1,7 +1,11 @@
 import { useEffect, useState, useRef, useMemo } from "react";
+import { TbSearch, TbArrowsSort, TbCheck, TbPlus } from "react-icons/tb";
 import api from "../api/client";
 import NewNote from "../components/newNote";
 import Menu from "../components/Menu";
+import ProfileDrop from "../components/ProfileDrop";
+import Search from "../components/Search";
+import NoteOpen from "../components/NoteOpen";
 import "./Notes.css";
 
 export default function Notes({ token, userEmail, onLogout }) {
@@ -9,11 +13,26 @@ export default function Notes({ token, userEmail, onLogout }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showNewNote, setShowNewNote] = useState(false);
   const [menuCollapsed, setMenuCollapsed] = useState(false);
-  const dropdownRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [currentBackground, setCurrentBackground] = useState(() => {
+    return localStorage.getItem('appBackground') || '';
+  });
 
   const fetchNotes = async () => {
-    const res = await api.get(`/notes?token=${token}`);
-    setNotes(res.data);
+    try {
+      const res = await api.get(`/notes`, {
+        params: {
+          token,
+          search: searchQuery,
+          sort: sortBy
+        }
+      });
+      setNotes(res.data);
+    } catch (error) {
+      console.error("Failed to fetch notes", error);
+    }
   };
 
   const createNote = async (note) => {
@@ -27,28 +46,29 @@ export default function Notes({ token, userEmail, onLogout }) {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    }
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  }, [searchQuery, sortBy]);
 
   const handleMenuCollapse = (collapsed) => {
     setMenuCollapsed(collapsed);
   };
+
+  // Handle background change
+  const handleBackgroundChange = (bgValue) => {
+    setCurrentBackground(bgValue);
+    localStorage.setItem('appBackground', bgValue);
+  };
+
+  // Apply background style
+  useEffect(() => {
+    if (currentBackground) {
+       document.body.style.background = currentBackground;
+       document.body.style.backgroundSize = 'cover';
+       document.body.style.backgroundAttachment = 'fixed';
+    } else {
+       // Reset to default variable
+       document.body.style.background = 'var(--background-color)';
+    }
+  }, [currentBackground]);
 
   const containerStyle = useMemo(() => {
     const root = getComputedStyle(document.documentElement);
@@ -66,7 +86,12 @@ export default function Notes({ token, userEmail, onLogout }) {
       <Menu onCollapseChange={handleMenuCollapse} />
       <div className="top-bar">
         <div className="top-bar__left">Smart Notes</div>
-        <div className="top-bar__right" ref={dropdownRef}>
+        
+        <div className="top-bar__center">
+          <Search onSearch={setSearchQuery} onSort={setSortBy} />
+        </div>
+
+        <div className="top-bar__right">
           <div
             className="user-icon"
             onClick={() => setDropdownOpen((v) => !v)}
@@ -86,34 +111,53 @@ export default function Notes({ token, userEmail, onLogout }) {
             </svg>
           </div>
           {dropdownOpen && (
-            <div className="user-dropdown">
-              <div className="user-email">{userEmail}</div>
-              <button className="logout-button" onClick={onLogout}>
-                Logout
-              </button>
-            </div>
+            <ProfileDrop 
+              userEmail={userEmail} 
+              onLogout={onLogout}
+              onClose={() => setDropdownOpen(false)}
+              onBackgroundChange={handleBackgroundChange}
+              currentBackground={currentBackground}
+            />
           )}
         </div>
       </div>
       <div className="notes-container" style={containerStyle}>
-        <ul className="notes-grid">
-          {notes.map((n) => (
-            <li key={n.id} className="note-card">
-              <b>{n.title}</b>
-              <p>{n.content}</p>
-            </li>
-          ))}
-        </ul>
+        {notes.length === 0 ? (
+          <div className="empty-state">
+            <h3>No notes yet</h3>
+            <p>Click the + button to create your first note.</p>
+          </div>
+        ) : (
+          <ul className="notes-grid">
+            {notes.map((n) => (
+              <li 
+                key={n.id} 
+                className="note-card"
+                onClick={() => setSelectedNote(n)}
+              >
+                <b>{n.title}</b>
+                <p>{n.content}</p>
+              </li>
+            ))}
+          </ul>
+        )}
         <button
           className="floating-add-button"
           onClick={() => setShowNewNote(true)}
+          aria-label="Create new note"
         >
-          +
+          <TbPlus />
         </button>
         {showNewNote && (
           <NewNote
             onClose={() => setShowNewNote(false)}
             onCreate={createNote}
+          />
+        )}
+        {selectedNote && (
+          <NoteOpen 
+            note={selectedNote} 
+            onClose={() => setSelectedNote(null)} 
           />
         )}
       </div>

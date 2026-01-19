@@ -26,13 +26,27 @@ async def create_note(user_id: str, data):
 # ----------------------------
 # LIST NOTES
 # ----------------------------
-async def list_notes(user_id: str):
-    cursor = db.notes.find(
-        {
-            "user_id": ObjectId(user_id),
-            "is_deleted": False
-        }
-    ).sort("updated_at", -1)
+async def list_notes(user_id: str, search: str = None, sort_by: str = "newest"):
+    query = {
+        "user_id": ObjectId(user_id),
+        "is_deleted": False
+    }
+
+    if search:
+        query["$or"] = [
+            {"title": {"$regex": search, "$options": "i"}},
+            {"content": {"$regex": search, "$options": "i"}}
+        ]
+
+    sort_param = [("updated_at", -1)]
+    if sort_by == "oldest":
+        sort_param = [("updated_at", 1)]
+    elif sort_by == "az":
+        sort_param = [("title", 1)]
+    elif sort_by == "za":
+        sort_param = [("title", -1)]
+
+    cursor = db.notes.find(query).sort(sort_param)
 
     return [serialize_note(note) async for note in cursor]
 

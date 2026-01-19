@@ -1,0 +1,129 @@
+.profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    width: 300px;
+    background: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--menu-border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    z-index: 100;
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top right;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+[data-theme="dark"] .profile-dropdown {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--menu-border-color);
+}
+
+.profile-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.profile-email {
+    font-size: 1rem;
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.background-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.bg-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    /* default border */
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bg-option:hover {
+    transform: scale(1.15);
+}
+
+.bg-option.active {
+    border-color: var(--text-color);
+    box-shadow: 0 0 0 2px var(--background-color), 0 0 0 4px var(--primary-color);
+    transform: scale(1.1);
+}
+
+.bg-option-none {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+}
+
+/* Specific color definitions to verify visual feedback if created inline */
+/* (Not strictly needed if inline styles are used, but good for structure) */
+
+.profile-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--menu-border-color);
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 59, 48, 0.2);
+}

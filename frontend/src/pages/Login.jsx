@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../api/client";
 import "./Login.css";
 
@@ -30,6 +31,9 @@ export default function Login({ onLogin }) {
           onChange={e => setPassword(e.target.value)}
         />
         <button onClick={handleLogin}>Login</button>
+        <div className="login-link" style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.9rem" }}>
+             Don't have an account? <Link to="/register" style={{ color: "var(--primary-color)", textDecoration: "none" }}>Register</Link>
+        </div>
       </div>
     </div>
   );
