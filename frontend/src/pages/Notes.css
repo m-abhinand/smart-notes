@@ -1,0 +1,157 @@
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align the notes to the left */
+  justify-content: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: "Space Mono", monospace; /* Apply Space Mono to the Notes page */
+  padding: 2rem;
+  padding-top: 80px;
+  box-sizing: border-box;
+  transition: padding-left var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1);
+  will-change: padding-left;
+}
+
+.notes-grid {
+  display: flex; /* Use flexbox for horizontal alignment */
+  flex-wrap: wrap; /* Allow notes to wrap to the next row */
+  gap: 1.5rem; /* Add consistent spacing between notes */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.note-card {
+  background: var(--secondary-color);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 250px; /* Fix the width of each card */
+}
+
+.note-card b {
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.note-card p {
+  margin: 0;
+  color: var(--text-color);
+}
+
+.top-bar {
+  width: 100vw;
+  height: 56px;
+  background: var(--primary-color); /* Use primary color for better visibility */
+  color: var(--background-color); /* Text color contrasts with the background */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+  padding: 0 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.top-bar__left {
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.top-bar__right {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--secondary-color); /* Ensure visibility against the top bar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s, background-color 0.2s;
+}
+
+.user-icon:hover {
+  background: var(--background-color); /* Slight hover effect */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-icon:focus {
+  outline: 2px solid var(--background-color);
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 48px;
+  min-width: 180px;
+  background: var(--background-color); /* Dropdown background matches theme */
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow for visibility */
+  padding: 1rem;
+  z-index: 100;
+  font-size: 1rem;
+}
+
+.user-email {
+  word-break: break-word;
+  font-weight: 500;
+  color: var(--primary-color); /* Use primary color for emphasis */
+}
+
+.logout-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.logout-button:hover {
+  background: #535bf2;
+}
+
+.floating-add-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: var(--background-color);
+  font-size: 2rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.floating-add-button:hover {
+  background: #535bf2;
+  transform: scale(1.1);
+}

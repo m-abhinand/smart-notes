@@ -1,0 +1,218 @@
+.menu {
+  position: fixed;
+  top: calc(56px + 12px); /* detached a bit from top bar */
+  left: var(--menu-left-offset); /* detached from left edge (variable) */
+  bottom: var(--menu-bottom-offset); /* stretch down towards bottom */
+  width: var(--menu-width-open);
+  padding: 0.5rem 0.5rem 0.6rem; /* include bottom padding so footer sits neatly */
+  /* frosted glass container */
+  background: var(--menu-bg-color);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--text-color);
+  border: 1px solid var(--menu-border-color);
+  border-radius: 12px; /* full rounded card */
+  box-shadow: 0 8px 28px rgba(12, 16, 22, 0.12);
+  overflow-y: auto; /* scroll if content overflows */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition:
+    width var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1),
+    background-color var(--menu-transition-duration) ease,
+    padding-left 0.18s ease,
+    padding-right 0.18s ease;
+  z-index: 100;
+  box-sizing: border-box; /* ensure padding/border included in width */
+  overflow-x: hidden;     /* prevent horizontal scrolling */
+}
+
+/* keep the collapsed width but avoid changing inner alignment abruptly.
+   Instead compute padding so the fixed icon slot (32px) is visually centered. */
+.menu.collapsed {
+  width: var(--menu-width-collapsed); /* lean bar when collapsed */
+  padding-left: 0; /* remove container padding so item padding centers icon */
+  padding-right: 0;
+}
+
+/* Center icons when collapsed and remove lateral spacing that causes offset */
+.menu.collapsed .menu-header,
+.menu.collapsed .menu-item,
+.menu.collapsed .menu-footer .menu-item {
+  /* ((collapsed width) - icon width) / 2 */
+  padding-left: calc((var(--menu-width-collapsed) - 32px) / 2);
+  padding-right: calc((var(--menu-width-collapsed) - 32px) / 2);
+  gap: 0; /* reduce gap so label space doesn't interfere (label will be hidden) */
+}
+
+/* Ensure footer/settings item doesn't stretch and its icon is centered when collapsed */
+.menu.collapsed .menu-footer .menu-item {
+  width: auto;                 /* don't force full width */
+  justify-content: center;     /* center the icon (and hidden label) */
+}
+
+/* header */
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  cursor: pointer;
+  border-bottom: none; /* remove header separator */
+}
+
+/* --- ICON CONTAINER --- */
+.menu-header .menu-icon,
+.menu-item .menu-icon {
+  font-size: 1.5rem;
+  width: var(--menu-icon-size);
+  height: var(--menu-icon-size);
+  flex: 0 0 var(--menu-icon-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  /* Remove transform: translateY(4px); for perfect centering */
+  border-radius: 12px;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border-radius 0.18s,
+    box-shadow 0.18s;
+}
+
+/* --- SVG ICON FILL/OUTLINE (kept minimal, no active fill forcing) --- */
+.menu-item .menu-icon svg,
+.menu-header .menu-icon svg {
+  width: 21px;
+  height: 21px;
+  display: block;
+}
+
+.menu-item .menu-icon svg * {
+  transition: stroke 180ms, fill 180ms, opacity 180ms;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+}
+
+/* keep icon area fixed so items don't shift */
+.menu-header .menu-icon,
+.menu-item .menu-icon {
+  font-size: 1.5rem;        /* a bit bigger */
+  width: 32px;              /* fixed width to lock icon position */
+  flex: 0 0 32px;
+  text-align: center;
+  transform: translateY(4px); /* nudge icons slightly lower */
+}
+
+/* per-category icon colors */
+.menu-item.notes .menu-icon {
+  color: var(--icon-color-notes);
+}
+.menu-item.tasks .menu-icon {
+  color: var(--icon-color-tasks);
+}
+.menu-item.locked .menu-icon {
+  color: var(--icon-color-locked);
+}
+.menu-item.trash .menu-icon {
+  color: var(--icon-color-trash);
+}
+
+/* label behavior: only opacity changes (no translate) to avoid nudging */
+.menu-label {
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(var(--menu-width-open) - 72px);
+  transition: opacity 0.18s ease, max-width 0.18s ease;
+  will-change: opacity;
+  opacity: 1;
+  width: auto;
+}
+
+/* hide visually while preserving layout constraints so icons don't move */
+.menu-label.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* list */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* small gap so container height stays compact */
+}
+
+/* footer anchored to the bottom of the menu */
+.menu-footer {
+  margin-top: auto;
+  padding: 0.6rem 0.5rem 0.4rem; /* top + bottom padding for clear separation from edge */
+  border-top: 1px solid var(--menu-border-color); /* subtle separator */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.menu-footer .menu-item {
+  width: 100%;
+  border-top: none;
+  padding: 0.6rem 0.75rem; /* match main items to avoid extra width */
+  gap: 0.75rem;
+  align-items: center; /* ensure icon + label align correctly */
+  justify-content: flex-start;
+  min-width: 0; /* allow shrinking */
+}
+
+.menu-item.settings .menu-icon {
+  /* keep icon color default; do not override category icon colors */
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem; /* smaller vertical padding keeps menu height tight */
+  cursor: pointer;
+  transition: background 0.2s ease; /* only background transitions */
+  min-width: 0; /* prevent flex children from forcing overflow */
+}
+
+.menu-item:hover {
+  background: var(--border-color); /* subtle highlight on hover */
+}
+
+/* replace abrupt collapsed rules with animated padding/centering so collapse is the reverse of open */
+/* menu keeps existing transition on width; add transitions on item/header padding to animate child layout */
+.menu-header,
+.menu-item,
+.menu-footer .menu-item {
+  transition: padding-left var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1),
+              padding-right var(--menu-transition-duration) cubic-bezier(.2,.9,.2,1);
+}
+
+/* label behavior already transitions opacity & max-width; ensure consistent hiding on collapse */
+.menu.collapsed .menu-label {
+  opacity: 0;
+  width: 0;
+  max-width: 0;
+  overflow: hidden;
+}
+
+/* --- COLLAPSED PADDING --- */
+.menu.collapsed .menu-header,
+.menu.collapsed .menu-item,
+.menu.collapsed .menu-footer .menu-item {
+  padding-left: calc((var(--menu-width-collapsed) - var(--menu-icon-size)) / 2);
+  padding-right: calc((var(--menu-width-collapsed) - var(--menu-icon-size)) / 2);
+  gap: 0;
+}
