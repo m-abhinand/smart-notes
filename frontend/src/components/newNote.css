@@ -48,7 +48,7 @@
 
 /* Expanded note card - matching NoteOpen style exactly */
 .new-note-card {
-  background: var(--card-bg-color);
+  background: var(--background-color);
   /* No blur as requested */
   /* backdrop-filter: blur(10px); */
   border: 1px solid var(--menu-border-color);
@@ -130,7 +130,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--card-bg-color);
+  background: transparent;
 }
 
 .note-modal-content-input {
