@@ -1,106 +1,213 @@
-.new-note-overlay {
+.new-note-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1000;
-  animation: fadeIn 0.3s ease-out;
 }
 
-.new-note-popup {
-  background: var(--background-color);
-  color: var(--text-color);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 400px;
-  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Floating trigger text box */
+.new-note-trigger {
+  background: var(--card-bg-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--menu-border-color);
+  border-radius: 50px;
+  padding: 1rem 2.5rem;
+  cursor: pointer;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: floatIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.new-note-popup h2 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-}
-
-.new-note-popup input,
-.new-note-popup textarea {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--secondary-color);
-  color: var(--text-color);
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-.new-note-popup input:focus,
-.new-note-popup textarea:focus {
-  outline: none;
+.new-note-trigger:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.15),
+    0 0 0 1px var(--primary-color);
   border-color: var(--primary-color);
 }
 
-.new-note-actions {
+.trigger-text {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  font-style: italic;
+}
+
+/* Expanded note card - matching app's design language */
+.new-note-card {
+  background: var(--card-bg-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--menu-border-color);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 550px;
+  max-width: 90vw;
+  box-shadow: var(--card-shadow);
+  animation: expandCard 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: bottom center;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.cancel-button,
-.create-button {
-  padding: 0.5rem 1rem;
-  border: none;
+.new-note-container:not(.expanded) .new-note-card {
+  animation: collapseCard 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes expandCard {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes collapseCard {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+}
+
+/* Content textarea - primary input */
+.note-content-input {
+  width: 100%;
+  min-height: 180px;
+  background: transparent;
+  border: 1px solid var(--menu-border-color);
   border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s;
-}
-
-.cancel-button {
-  background: var(--secondary-color);
+  outline: none;
+  resize: vertical;
+  font-size: 0.95rem;
+  line-height: 1.6;
   color: var(--text-color);
+  font-family: inherit;
+  padding: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.cancel-button:hover {
-  background: var(--border-color);
+.note-content-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.1);
 }
 
-.create-button {
+.note-content-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.4;
+  font-style: italic;
+}
+
+/* Title input - smaller, secondary */
+.note-title-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--menu-border-color);
+  outline: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+  font-family: inherit;
+  padding: 0.75rem 0.5rem;
+  transition: border-color 0.2s ease;
+}
+
+.note-title-input:focus {
+  border-color: var(--primary-color);
+}
+
+.note-title-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.35;
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* Action buttons */
+.note-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.note-btn-close,
+.note-btn-create {
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.note-btn-close {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--menu-border-color);
+}
+
+.note-btn-close:hover {
+  background: var(--secondary-color);
+  border-color: var(--text-color);
+}
+
+.note-btn-create {
   background: var(--primary-color);
-  color: var(--background-color);
+  color: white;
+  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
 }
 
-.create-button:hover {
-  background: #535bf2;
+.note-btn-create:hover {
+  background: #7c85ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(100, 108, 255, 0.4);
+}
+
+.note-btn-create:active,
+.note-btn-close:active {
+  transform: translateY(0);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .new-note-trigger {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .new-note-card {
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }

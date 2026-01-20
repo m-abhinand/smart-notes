@@ -7,9 +7,9 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-  background: '#242424',
-  text: 'rgba(255, 255, 255, 0.87)',
-  primary: '#646cff',
-  secondary: '#1a1a1a',
-  border: '#333333',
+  background: '#000000', // Pitch black
+  text: 'rgba(255, 255, 255, 0.9)',
+  primary: '#7c85ff',
+  secondary: '#0a0a0a',
+  border: '#1a1a1a',
 };

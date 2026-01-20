@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './ProfileDrop.css';
-import handImg from '../assets/hand.jpg';
-import pencilImg from '../assets/pencil.jpg';
-import stormImg from '../assets/storm.jpg';
 
-export default function ProfileDrop({ userEmail, onLogout, onClose, onBackgroundChange, currentBackground }) {
+export default function ProfileDrop({ userEmail, onLogout, onClose }) {
     const dropdownRef = useRef(null);
+    const [currentTheme, setCurrentTheme] = useState(
+        localStorage.getItem('theme') || 'light'
+    );
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -19,14 +19,17 @@ export default function ProfileDrop({ userEmail, onLogout, onClose, onBackground
         };
     }, [onClose]);
 
-    const colors = [
-        { id: 'default', label: 'Default', value: '' }, // Renders as 'none' reset
-        { id: 'warm', label: 'Warm', value: 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)' },
-        { id: 'cool', label: 'Cool', value: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)' },
-        { id: 'ocean', label: 'Ocean', value: 'linear-gradient(to top, #30cfd0 0%, #330867 100%)' },
-        { id: 'dusk', label: 'Dusk', value: 'linear-gradient(to top, #5f72bd 0%, #9b23ea 100%)' },
-        { id: 'forest', label: 'Forest', value: 'linear-gradient(to top, #0ba360 0%, #3cba92 100%)' },
-    ];
+    // Apply saved theme on mount
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }, []);
+
+    const handleThemeChange = (theme) => {
+        setCurrentTheme(theme);
+        localStorage.setItem('theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+    };
 
     return (
         <div className="profile-dropdown" ref={dropdownRef}>
@@ -36,21 +39,20 @@ export default function ProfileDrop({ userEmail, onLogout, onClose, onBackground
             </div>
 
             <div className="profile-section">
-                <span className="profile-label">Theme Color</span>
-                <div className="background-options">
-                    {colors.map((color) => (
-                        <div 
-                            key={color.id}
-                            className={`bg-option ${currentBackground === color.value ? 'active' : ''}`}
-                            onClick={() => onBackgroundChange(color.value)}
-                            title={color.label}
-                            style={{ background: color.value || 'var(--secondary-color)' }}
-                        >
-                           {color.id === 'default' && (
-                               <div className="bg-option-none" title="Default" />
-                           )}
-                        </div>
-                    ))}
+                <span className="profile-label">Theme</span>
+                <div className="theme-toggle">
+                    <button 
+                        className={`theme-btn ${currentTheme === 'light' ? 'active' : ''}`}
+                        onClick={() => handleThemeChange('light')}
+                    >
+                        Light
+                    </button>
+                    <button 
+                        className={`theme-btn ${currentTheme === 'dark' ? 'active' : ''}`}
+                        onClick={() => handleThemeChange('dark')}
+                    >
+                        Dark
+                    </button>
                 </div>
             </div>
 
