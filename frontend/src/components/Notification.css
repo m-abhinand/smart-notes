@@ -41,6 +41,22 @@
     }
 }
 
+.notification-toast.closing {
+    animation: toastSlideDown 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideDown {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+}
+
 [data-theme="dark"] .notification-toast {
     background: rgba(30, 30, 30, 0.9);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);

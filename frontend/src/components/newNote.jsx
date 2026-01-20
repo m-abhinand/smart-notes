@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TbX, TbDeviceFloppy } from "react-icons/tb";
 import "./newNote.css";
 
 export default function NewNote({ onClose, onCreate }) {
@@ -11,9 +12,9 @@ export default function NewNote({ onClose, onCreate }) {
       onCreate({ title, content });
       setTitle("");
       setContent("");
-      // Trigger closing animation
       setIsExpanded(false);
-      setTimeout(onClose, 300); // Wait for animation to complete
+      // No delay needed for direct close with this design
+      onClose(); 
     }
   };
 
@@ -23,7 +24,7 @@ export default function NewNote({ onClose, onCreate }) {
 
   const handleClose = () => {
     setIsExpanded(false);
-    setTimeout(onClose, 300);
+    onClose();
   };
 
   return (
@@ -34,29 +35,38 @@ export default function NewNote({ onClose, onCreate }) {
         </div>
       ) : (
         <div className="new-note-card">
-          <input
-            type="text"
-            className="note-title-input"
-            placeholder="Add a title (optional)"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          
-          <textarea
-            className="note-content-input"
-            placeholder="What's on your mind?"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            autoFocus
-          />
-
-          <div className="note-actions">
-            <button className="note-btn-close" onClick={handleClose}>
-              Cancel
-            </button>
-            <button className="note-btn-create" onClick={handleCreate}>
-              Create Note
-            </button>
+          <div className="note-modal-header">
+            <input 
+              className="note-modal-title-input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Give it a title..."
+            />
+            <div className="note-header-actions">
+              <button 
+                className="note-modal-save" 
+                onClick={handleCreate}
+                aria-label="Create note"
+              >
+                <TbDeviceFloppy />
+              </button>
+              <button 
+                className="note-modal-close" 
+                onClick={handleClose}
+                aria-label="Close"
+              >
+                <TbX />
+              </button>
+            </div>
+          </div>
+          <div className="note-modal-body">
+            <textarea 
+              className="note-modal-content-input"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Start writing..."
+              autoFocus
+            />
           </div>
         </div>
       )}

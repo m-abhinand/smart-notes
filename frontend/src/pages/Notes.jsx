@@ -7,6 +7,7 @@ import ProfileDrop from "../components/ProfileDrop";
 import Search from "../components/Search";
 import NoteOpen from "../components/NoteOpen";
 import Notification from "../components/Notification";
+import SignOutModal from "../components/SignOutModal";
 import "./Notes.css";
 
 export default function Notes({ token, userEmail, onLogout }) {
@@ -18,6 +19,7 @@ export default function Notes({ token, userEmail, onLogout }) {
   const [sortBy, setSortBy] = useState("newest");
   const [selectedNote, setSelectedNote] = useState(null);
   const [notification, setNotification] = useState("");
+  const [showSignOut, setShowSignOut] = useState(false);
 
   const fetchNotes = async () => {
     try {
@@ -157,7 +159,10 @@ export default function Notes({ token, userEmail, onLogout }) {
           {dropdownOpen && (
             <ProfileDrop 
               userEmail={userEmail} 
-              onLogout={onLogout}
+              onLogout={() => {
+                setDropdownOpen(false);
+                setShowSignOut(true);
+              }}
               onClose={() => setDropdownOpen(false)}
             />
           )}
@@ -197,6 +202,11 @@ export default function Notes({ token, userEmail, onLogout }) {
         <Notification 
           message={notification} 
           onClose={() => setNotification("")} 
+        />
+        <SignOutModal 
+          isOpen={showSignOut}
+          onClose={() => setShowSignOut(false)}
+          onConfirm={onLogout}
         />
       </div>
     </>
