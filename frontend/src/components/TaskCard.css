@@ -1,85 +1,151 @@
 .task-card {
-  background: var(--card-bg-color);
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid var(--menu-border-color);
   display: flex;
-  gap: 12px;
   align-items: flex-start;
-  min-height: 80px;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-  animation: riseUp 0.4s ease-out backwards;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: var(--card-bg-color);
+  border: 1px solid var(--menu-border-color);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.task-card.completed {
-  opacity: 0.7;
-  text-decoration: line-through;
+/* Hover */
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary-color);
 }
+
+/* LEFT */
 
 .task-left {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
+
+.task-left input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+  margin: 2px 0;
+}
+
+.task-checkbox {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.task-checkbox:hover {
+  background: rgba(100, 108, 255, 0.08);
+}
+
+/* BODY */
 
 .task-body {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .task-title {
   font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 6px;
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.25;
   word-break: break-word;
 }
 
 .task-desc {
   color: var(--text-color);
-  opacity: 0.85;
-  font-size: 0.95rem;
-  margin-bottom: 8px;
+  opacity: 0.8;
+  font-size: 0.92rem;
+  line-height: 1.3;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
-.task-due {
-  color: var(--text-color);
-  font-size: 0.85rem;
-  opacity: 0.8;
+/* META */
+
+.task-meta {
   display: flex;
-  gap: 6px;
   align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
 }
+
+.task-due,
+.task-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+
+.task-timer.overdue {
+  color: #e25555;
+  opacity: 1;
+}
+
+/* ACTIONS */
 
 .task-actions {
   display: flex;
-  gap: 6px;
   align-items: center;
 }
 
 .task-delete {
   background: transparent;
   border: none;
-  cursor: pointer;
   color: var(--text-color);
-  opacity: 0.7;
+  opacity: 0.85;
   padding: 6px;
   border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.05rem;
 }
 
 .task-delete:hover {
-  /* Use subtle theme-aware hover (light-friendly default) */
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 0, 0, 0.06);
+  color: #e25555;
 }
 
-/* Dark theme hover override so it doesn't use a light shadow */
-[data-theme="dark"] .task-delete:hover {
-  background: rgba(255, 255, 255, 0.03);
+/* COMPLETED */
+
+.task-card.completed {
+  opacity: 0.65;
 }
 
-/* Slightly stronger hover shadow in dark so the lift is visible */
-[data-theme="dark"] .task-card:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .task-card {
+    padding: 0.75rem;
+  }
+
+  .task-title {
+    font-size: 0.96rem;
+  }
 }

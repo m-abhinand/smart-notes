@@ -15,7 +15,7 @@ export default function Tasks({ token, userEmail, onLogout }) {
   const [menuCollapsed, setMenuCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterCompleted, setFilterCompleted] = useState(null); // null = all, true/false filters
+  const [filterCompleted, setFilterCompleted] = useState(null);
   const [notification, setNotification] = useState("");
   const [showSignOut, setShowSignOut] = useState(false);
 
@@ -25,7 +25,10 @@ export default function Tasks({ token, userEmail, onLogout }) {
         params: {
           token,
           search: searchQuery || undefined,
-          completed: filterCompleted === null ? undefined : filterCompleted,
+          completed:
+            filterCompleted === null || filterCompleted === "due"
+              ? undefined
+              : filterCompleted,
           sort: sortBy,
         },
       });
@@ -45,7 +48,7 @@ export default function Tasks({ token, userEmail, onLogout }) {
       setNotification("Task created");
       fetchTasks();
     } catch (err) {
-      console.error("Create task failed", err);
+      console.error(err);
     }
   };
 
@@ -88,87 +91,31 @@ export default function Tasks({ token, userEmail, onLogout }) {
     return { paddingLeft: `${menuLeft + menuW + gap}px` };
   }, [menuCollapsed]);
 
-  // Apply grid paper background like Notes page (respecting current theme and updates)
-  useEffect(() => {
-    const applyBackground = () => {
-      const theme = document.documentElement.getAttribute("data-theme");
-      const isDark = theme === "dark";
-
-      if (isDark) {
-        document.body.style.backgroundColor = "#000000";
-        document.body.style.backgroundImage = `
-          linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
-        `;
-      } else {
-        document.body.style.backgroundColor = "#fdfbf7";
-        document.body.style.backgroundImage = `
-          linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-        `;
-      }
-
-      document.body.style.backgroundSize = "20px 20px";
-      document.body.style.backgroundAttachment = "fixed";
-    };
-
-    applyBackground();
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === "data-theme") {
-          applyBackground();
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-
-    return () => observer.disconnect();
-  }, []);
+  const counts = useMemo(() => {
+    const all = tasks.length;
+    const completed = tasks.filter(t => t.completed).length;
+    const inProgress = tasks.filter(t => !t.completed).length;
+    const due = tasks.filter(
+      t => !t.completed && t.due_date && new Date(t.due_date) < new Date()
+    ).length;
+    return { all, completed, inProgress, due };
+  }, [tasks]);
 
   return (
     <>
       <Menu onCollapseChange={handleMenuCollapse} />
+
       <div className="top-bar">
         <div className="top-bar__left">Smart Notes</div>
-
         <div className="top-bar__center">
           <Search onSearch={setSearchQuery} onSort={setSortBy} />
         </div>
-
         <div className="top-bar__right">
-          <div className="filter-buttons">
-            <button
-              className={`filter-btn ${filterCompleted === null ? "active" : ""}`}
-              onClick={() => setFilterCompleted(null)}
-              title="All"
-            >
-              All
-            </button>
-            <button
-              className={`filter-btn ${filterCompleted === false ? "active" : ""}`}
-              onClick={() => setFilterCompleted(false)}
-              title="Active"
-            >
-              Active
-            </button>
-            <button
-              className={`filter-btn ${filterCompleted === true ? "active" : ""}`}
-              onClick={() => setFilterCompleted(true)}
-              title="Completed"
-            >
-              Done
-            </button>
-          </div>
-
           <div
             className="user-icon"
-            onClick={() => setDropdownOpen((v) => !v)}
-            tabIndex={0}
-            aria-label="User menu"
+            onClick={() => setDropdownOpen(v => !v)}
           >
-            <svg height="28" width="28" viewBox="0 0 24 24" fill="none">
+            <svg height="28" width="28" viewBox="0 0 24 24">
               <circle cx="12" cy="8" r="4" fill="var(--primary-color)" />
               <ellipse
                 cx="12"
@@ -181,8 +128,8 @@ export default function Tasks({ token, userEmail, onLogout }) {
             </svg>
           </div>
           {dropdownOpen && (
-            <ProfileDrop 
-              userEmail={userEmail} 
+            <ProfileDrop
+              userEmail={userEmail}
               onLogout={() => {
                 setDropdownOpen(false);
                 setShowSignOut(true);
@@ -194,6 +141,34 @@ export default function Tasks({ token, userEmail, onLogout }) {
       </div>
 
       <div className="tasks-container" style={containerStyle}>
+        {/* FILTER BAR */}
+        <div className="filter-bar">
+          <button
+            className={`filter-chip${filterCompleted === null ? " active" : ""}`}
+            onClick={() => setFilterCompleted(null)}
+          >
+            All <span className="chip-count">{counts.all}</span>
+          </button>
+          <button
+            className={`filter-chip${filterCompleted === false ? " active" : ""}`}
+            onClick={() => setFilterCompleted(false)}
+          >
+            In Progress <span className="chip-count">{counts.inProgress}</span>
+          </button>
+          <button
+            className={`filter-chip${filterCompleted === true ? " active" : ""}`}
+            onClick={() => setFilterCompleted(true)}
+          >
+            Completed <span className="chip-count">{counts.completed}</span>
+          </button>
+          <button
+            className={`filter-chip${filterCompleted === "due" ? " active" : ""}`}
+            onClick={() => setFilterCompleted("due")}
+          >
+            Due <span className="chip-count">{counts.due}</span>
+          </button>
+        </div>
+
         {tasks.length === 0 ? (
           <div className="empty-state">
             <h3>No tasks yet</h3>
@@ -201,22 +176,36 @@ export default function Tasks({ token, userEmail, onLogout }) {
           </div>
         ) : (
           <ul className="tasks-grid">
-            {tasks.map((t) => (
-              <li key={t.id}>
-                <TaskCard
-                  task={t}
-                  onToggle={() => toggleComplete(t)}
-                  onDelete={() => removeTask(t.id)}
-                />
-              </li>
-            ))}
+            {tasks
+              .filter(t => {
+                if (filterCompleted === null) return true;
+                if (filterCompleted === true) return t.completed;
+                if (filterCompleted === false) return !t.completed;
+                if (filterCompleted === "due")
+                  return (
+                    !t.completed &&
+                    t.due_date &&
+                    new Date(t.due_date) < new Date()
+                  );
+                return true;
+              })
+              .map(t => (
+                <li key={t.id}>
+                  <TaskCard
+                    task={t}
+                    onToggle={() => toggleComplete(t)}
+                    onDelete={() => removeTask(t.id)}
+                  />
+                </li>
+              ))}
           </ul>
         )}
 
-        {/* Inline new-task widget that behaves like the "What's on your mind?" bar */}
         <NewTask onCreate={createTask} />
-
-        <Notification message={notification} onClose={() => setNotification("")} />
+        <Notification
+          message={notification}
+          onClose={() => setNotification("")}
+        />
         <SignOutModal
           isOpen={showSignOut}
           onClose={() => setShowSignOut(false)}

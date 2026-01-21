@@ -1,30 +1,39 @@
-import { useState } from "react";
-import { TbX, TbDeviceFloppy } from "react-icons/tb";
+import { useState, useEffect } from "react";
+import { TbX, TbDeviceFloppy, TbCalendar } from "react-icons/tb";
 import "./NewTask.css";
 
 export default function NewTask({ onCreate }) {
+  const today = new Date().toISOString().slice(0, 10);
+
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState(today);
+  const [dueTime, setDueTime] = useState("09:00");
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const reset = () => {
     setTitle("");
-    setDescription("");
-    setDueDate("");
+    setDueDate(today);
+    setDueTime("09:00");
+  };
+
+  const setTomorrow = () => {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    setDueDate(t.toISOString().slice(0, 10));
   };
 
   const handleCreate = async () => {
     if (!title.trim()) return;
-    const payload = {
-      title: title.trim(),
-      description: description.trim(),
-      due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
-    };
+
+    const dueISO = new Date(`${dueDate}T${dueTime}`).toISOString();
+
     setLoading(true);
     try {
-      await onCreate(payload);
+      await onCreate({
+        title: title.trim(),
+        due_date: dueISO,
+      });
       reset();
       setIsExpanded(false);
     } catch (err) {
@@ -38,10 +47,11 @@ export default function NewTask({ onCreate }) {
     <div className={`new-task-container ${isExpanded ? "expanded" : ""}`}>
       {!isExpanded ? (
         <div className="new-task-trigger" onClick={() => setIsExpanded(true)}>
-          <span className="trigger-text"> Add a task...</span>
+          <span className="trigger-text">Add a task…</span>
         </div>
       ) : (
-        <div className="new-task-card">
+        <div className="new-task-card compact">
+          {/* HEADER */}
           <div className="task-modal-header">
             <input
               className="task-title-input"
@@ -50,12 +60,12 @@ export default function NewTask({ onCreate }) {
               placeholder="Task title"
               autoFocus
             />
+
             <div className="task-header-actions">
               <button
                 className="task-save"
                 onClick={handleCreate}
                 disabled={loading}
-                aria-label="Create task"
               >
                 <TbDeviceFloppy />
               </button>
@@ -65,26 +75,33 @@ export default function NewTask({ onCreate }) {
                   reset();
                   setIsExpanded(false);
                 }}
-                aria-label="Close"
               >
                 <TbX />
               </button>
             </div>
           </div>
 
-          <div className="task-modal-body">
-            <textarea
-              className="task-desc-input"
-              placeholder="Description (optional)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <div className="task-footer">
+          {/* FOOTER */}
+          <div className="task-footer compact">
+            <div className="date-time-group">
+              <TbCalendar className="calendar-icon" />
+
               <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
+
+              <input
+                type="time"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+              />
+            </div>
+
+            <div className="quick-dates">
+              <button onClick={() => setDueDate(today)}>Today</button>
+              <button onClick={setTomorrow}>Tomorrow</button>
             </div>
           </div>
         </div>

@@ -2,10 +2,7 @@
   position: fixed;
   bottom: 2.5rem;
   right: 2.5rem;
-  left: auto;
-  transform: none;
   z-index: 1200;
-  /* avoid animating container transform; animate the card instead */
   transition: opacity 0.12s ease;
 }
 
@@ -18,14 +15,15 @@
   transform-origin: center center;
 }
 
-/* Floating trigger text box (matches new-note look) */
+/* ---------- TRIGGER ---------- */
+
 .new-task-trigger {
   background: var(--card-bg-color);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--menu-border-color);
   border-radius: 50px;
-  padding: 0.95rem 2.25rem;
+  padding: 0.85rem 2rem;
   cursor: pointer;
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.1),
@@ -49,37 +47,33 @@
   font-weight: 600;
 }
 
-/* Compact task card */
+/* ---------- CARD ---------- */
+
 .new-task-card {
   background: var(--background-color);
   border: 1px solid var(--menu-border-color);
   border-radius: 10px;
-  width: 440px;
+  width: 360px;
   max-width: 92vw;
-  padding: 0.5rem;
+  padding: 0.4rem;
   box-shadow: 0 18px 40px rgba(0,0,0,0.12);
   display: flex;
   flex-direction: column;
   transform-origin: center center;
 }
 
-/* New: animate the card when popup opens/closes */
 .new-task-container.expanded .new-task-card {
   animation: popupRaise 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.new-task-container.closing .new-task-card {
-  animation: popupFall 0.22s ease forwards;
-}
+/* ---------- HEADER ---------- */
 
-/* Header */
 .task-modal-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
   border-bottom: 1px solid var(--border-color);
-  background: var(--background-color);
 }
 
 .task-title-input {
@@ -87,7 +81,7 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-color);
   font-family: inherit;
@@ -95,8 +89,7 @@
 
 .task-header-actions {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .task-save,
@@ -105,9 +98,9 @@
   border: none;
   cursor: pointer;
   padding: 6px;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--text-color);
-  opacity: 0.8;
+  opacity: 0.75;
   border-radius: 8px;
 }
 
@@ -124,32 +117,76 @@
   background: rgba(255, 0, 0, 0.06);
 }
 
-/* Body */
-.task-modal-body {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  flex: 1;
-}
-
-.task-desc-input {
-  min-height: 160px;
-  resize: vertical;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text-color);
-  font-family: inherit;
-  font-size: 0.96rem;
-}
+/* ---------- FOOTER ---------- */
 
 .task-footer {
+  padding: 0.75rem 1rem 1rem;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-/* Animations */
+/* date + time container */
+.date-time-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+}
+
+.calendar-icon {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+/* date & time inputs */
+.date-time-group input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* today / tomorrow buttons */
+.quick-dates {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.quick-dates button {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: all 0.15s ease;
+}
+
+.quick-dates button:hover {
+  border-color: var(--primary-color);
+  opacity: 1;
+}
+
+/* ---------- INPUT ICON CONSISTENCY ---------- */
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  opacity: 0.6;
+}
+
+/* ---------- ANIMATIONS ---------- */
+
 @keyframes floatIn {
   from {
     opacity: 0;
@@ -172,18 +209,8 @@
   }
 }
 
-@keyframes popupFall {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(14px) scale(0.995);
-  }
-}
+/* ---------- DARK THEME ---------- */
 
-/* Dark theme adjustments */
 [data-theme="dark"] .new-task-trigger {
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.5),
@@ -192,11 +219,12 @@
 
 [data-theme="dark"] .new-task-card {
   background: #1e1e1e;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
   border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Mobile fallback */
+/* ---------- MOBILE ---------- */
+
 @media (max-width: 900px) {
   .new-task-container,
   .new-task-container.expanded {
@@ -205,9 +233,5 @@
     bottom: 3rem;
     top: auto;
     transform: translateX(-50%);
-  }
-
-  .new-task-card {
-    transform-origin: center center;
   }
 }
