@@ -1,16 +1,21 @@
 .new-note-container {
   position: fixed;
-  bottom: 3rem;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 2.5rem;
+  right: 2.5rem;
+  left: auto;
+  transform: none;
   z-index: 1000;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* container should not animate transform — only cards will animate */
+  transition: opacity 0.12s ease;
 }
 
 .new-note-container.expanded {
   bottom: auto;
   top: 50%;
+  left: 50%;
+  right: auto;
   transform: translate(-50%, -50%);
+  transform-origin: center center;
 }
 
 /* Floating trigger text box */
@@ -63,8 +68,17 @@
   flex-direction: column;
   overflow: hidden;
   /* Ensure content stays inside radius */
-  animation: expandCard 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Card animations are triggered by the container state below */
   transform-origin: center center;
+}
+
+/* New: animate the card when popup opens/closes */
+.new-note-container.expanded .new-note-card {
+  animation: popupRaise 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.new-note-container.closing .new-note-card {
+  animation: popupFall 0.22s ease forwards;
 }
 
 /* Header Section */
@@ -159,15 +173,25 @@
   }
 }
 
-@keyframes expandCard {
+@keyframes popupRaise {
   from {
     opacity: 0;
-    transform: scale(0.85);
+    transform: translateY(10px) scale(0.995);
   }
-
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes popupFall {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
   }
 }
 
@@ -182,4 +206,20 @@
   background: #1e1e1e;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile fallback: center on small widths so the card isn't clipped */
+@media (max-width: 900px) {
+  .new-note-container,
+  .new-note-container.expanded {
+    left: 50%;
+    right: auto;
+    bottom: 3rem;
+    top: auto;
+    transform: translateX(-50%);
+  }
+
+  .new-note-card {
+    transform-origin: center center;
+  }
 }

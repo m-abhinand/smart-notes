@@ -1,0 +1,70 @@
+.tasks-container {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1600px;
+  background-color: transparent;
+  color: var(--text-color);
+  font-family: "Space Mono", monospace;
+  padding: 1rem;
+  padding-top: 80px;
+  box-sizing: border-box;
+  animation: riseUp 0.5s ease-out;
+}
+
+/* re-use riseUp animation defined elsewhere */
+.tasks-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1400px) {
+  .tasks-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .tasks-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .tasks-grid { grid-template-columns: repeat(1, 1fr); }
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filter-btn {
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid var(--menu-border-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.filter-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: transparent;
+}
+
+/* Reuse floating-add-button styles already present in Notes.css */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  width: 100%;
+  color: var(--text-color);
+  opacity: 0.6;
+  text-align: center;
+}

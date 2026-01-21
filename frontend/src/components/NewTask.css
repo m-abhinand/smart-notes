@@ -1,0 +1,213 @@
+.new-task-container {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  left: auto;
+  transform: none;
+  z-index: 1200;
+  /* avoid animating container transform; animate the card instead */
+  transition: opacity 0.12s ease;
+}
+
+.new-task-container.expanded {
+  bottom: auto;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+
+/* Floating trigger text box (matches new-note look) */
+.new-task-trigger {
+  background: var(--card-bg-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--menu-border-color);
+  border-radius: 50px;
+  padding: 0.95rem 2.25rem;
+  cursor: pointer;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: floatIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.new-task-trigger:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.12),
+    0 0 0 1px var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.trigger-text {
+  font-size: 0.95rem;
+  color: var(--text-color);
+  opacity: 0.78;
+  font-weight: 600;
+}
+
+/* Compact task card */
+.new-task-card {
+  background: var(--background-color);
+  border: 1px solid var(--menu-border-color);
+  border-radius: 10px;
+  width: 440px;
+  max-width: 92vw;
+  padding: 0.5rem;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  transform-origin: center center;
+}
+
+/* New: animate the card when popup opens/closes */
+.new-task-container.expanded .new-task-card {
+  animation: popupRaise 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.new-task-container.closing .new-task-card {
+  animation: popupFall 0.22s ease forwards;
+}
+
+/* Header */
+.task-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-color);
+}
+
+.task-title-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  font-family: inherit;
+}
+
+.task-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-save,
+.task-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  opacity: 0.8;
+  border-radius: 8px;
+}
+
+.task-save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.task-save:hover {
+  background: rgba(100, 108, 255, 0.08);
+}
+
+.task-close:hover {
+  background: rgba(255, 0, 0, 0.06);
+}
+
+/* Body */
+.task-modal-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.task-desc-input {
+  min-height: 160px;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.96rem;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Animations */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes popupRaise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes popupFall {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .new-task-trigger {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .new-task-card {
+  background: #1e1e1e;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Mobile fallback */
+@media (max-width: 900px) {
+  .new-task-container,
+  .new-task-container.expanded {
+    left: 50%;
+    right: auto;
+    bottom: 3rem;
+    top: auto;
+    transform: translateX(-50%);
+  }
+
+  .new-task-card {
+    transform-origin: center center;
+  }
+}

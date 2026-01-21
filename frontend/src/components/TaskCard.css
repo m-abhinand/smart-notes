@@ -1,0 +1,85 @@
+.task-card {
+  background: var(--card-bg-color);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--menu-border-color);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 80px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  animation: riseUp 0.4s ease-out backwards;
+}
+
+.task-card.completed {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.task-left {
+  display: flex;
+  align-items: center;
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.task-desc {
+  color: var(--text-color);
+  opacity: 0.85;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.task-due {
+  color: var(--text-color);
+  font-size: 0.85rem;
+  opacity: 0.8;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.task-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.task-delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.7;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.task-delete:hover {
+  /* Use subtle theme-aware hover (light-friendly default) */
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark theme hover override so it doesn't use a light shadow */
+[data-theme="dark"] .task-delete:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Slightly stronger hover shadow in dark so the lift is visible */
+[data-theme="dark"] .task-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}

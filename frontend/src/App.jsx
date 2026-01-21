@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Notes from "./pages/Notes";
+import Tasks from "./pages/Tasks";
 import Welcome from "./pages/Welcome";
 import { lightTheme } from "./theme";
 
@@ -57,6 +58,10 @@ function App() {
       <Route
         path="/notes"
         element={token ? <Notes token={token} userEmail={userEmail} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/tasks"
+        element={token ? <Tasks token={token} userEmail={userEmail} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
