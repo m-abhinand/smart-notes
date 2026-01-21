@@ -1,64 +1,419 @@
-.login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.login-page {
   min-height: 100vh;
-  min-width: 100vw;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  font-family: "Space Mono", monospace; /* Apply Space Mono to the Login page */
-  position: fixed;
-  top: 0;
-  left: 0;
-}
+  width: 100vw;
 
-.login-form {
-  background: var(--secondary-color);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
+  /* Graph Paper / Math Notebook Background */
+  background-color: #fdfbf7;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-attachment: fixed;
 
-.login-form h2 {
-  margin-bottom: 1.5rem;
-  text-align: center;
   color: var(--text-color);
-}
-
-.login-form input {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--background-color);
-  color: var(--text-color);
-  font-size: 1rem;
+  font-family: "Space Mono", monospace;
+  display: flex;
+  padding: 0 8vw;
+  /* Reset padding */
   box-sizing: border-box;
 }
 
-.login-form input:focus {
-  outline: none;
+/* Dark theme background */
+[data-theme="dark"] .login-page {
+  background-color: #000000;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+/* LEFT */
+
+/* STACK CONTAINER */
+.login-left-container {
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: 400px;
+  height: 500px;
+  /* Allocated space for the stack */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  position: relative;
+  margin-right: 4rem;
+}
+
+/* SHARED CARD STYLES (Post-it) */
+.auth-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 400px;
+
+  /* Authentic Post-it Yellow */
+  background: #fff9c4;
+  background: linear-gradient(160deg, #fff9c4 0%, #fff5b8 100%);
+
+  padding: 3rem;
+
+  /* Curl Effect via spacing */
+  border-bottom-right-radius: 60px 5px;
+
+  /* Realistic Lifted Shadow */
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.1),
+    /* Close shadow */
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    /* Ambient shadow */
+    5px 10px 15px rgba(0, 0, 0, 0.1);
+  /* Curled corner shadow */
+
+  transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backface-visibility: hidden;
+
+  /* Subtle Paper Texture Noise */
+  background-image:
+    linear-gradient(160deg, #fff9c4 0%, #fff5b8 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter'%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+}
+
+/* Push Pin Effect on the Container (holding the stack) */
+.login-left-container::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+
+  /* Red Push Pin Style */
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+  box-shadow:
+    1px 2px 4px rgba(0, 0, 0, 0.3),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* STATE: FRONT */
+.auth-card.front {
+  transform: rotate(-1.5deg) translateX(0) scale(1);
+  z-index: 10;
+  opacity: 1;
+  filter: brightness(1);
+  /* Ensure full brightness */
+}
+
+/* STATE: BACK (Hidden/Peeking) */
+.auth-card.back {
+  /* Move it out further to avoid clipping during z-index swap */
+  transform: rotate(4deg) translateX(60px) translateY(-10px) scale(0.95);
+  z-index: 1;
+  /* Don't change background! It causes glitches with the texture. */
+  /* background: #fbf0a0; REMOVED */
+
+  opacity: 1;
+  pointer-events: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+  /* Use filter to darken it smoothly */
+  filter: brightness(0.92) contrast(0.95);
+}
+
+/* Register specific tilt if needed to differentiate stack */
+.register-card.back {
+  transform: rotate(6deg) translateX(40px) translateY(-15px) scale(0.95);
+}
+
+.login-card.back {
+  transform: rotate(4deg) translateX(40px) translateY(-10px) scale(0.95);
+}
+
+.link-text {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.error-msg {
+  color: #d32f2f;
+  font-size: 0.8rem;
+  min-height: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  position: relative;
+  /* Anchor for the arrow */
+}
+
+.back-arrow-container {
+  position: absolute;
+  left: -40px;
+  /* Position to the left of the text start */
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.5;
+  /* Subtle by default */
+  transition: all 0.2s ease;
+  font-size: 1.8rem;
+  /* Match or slightly smaller than title */
+}
+
+.back-arrow-container:hover {
+  opacity: 1;
+  transform: translateY(-50%) translateX(-3px);
+  /* Slight bump left on hover */
+  color: var(--primary-color);
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+/* INPUTS */
+
+.login-fields label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  opacity: 0.65;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.input-box {
+  background: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 1.2rem;
+  transition: border-color 0.15s ease;
+}
+
+.input-box:focus-within {
   border-color: var(--primary-color);
 }
 
-.login-form button {
+.input-box input {
   width: 100%;
-  padding: 0.75rem;
-  background: var(--primary-color);
-  color: white;
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  outline: none;
+  color: #2c3e50;
+  /* Dark text for light mode yellow post-it */
+  font-size: 0.95rem;
+  font-family: inherit;
 }
 
-.login-form button:hover {
-  background: #535bf2;
+/* REMOVE AUTOFILL COLOR */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--secondary-color) inset !important;
+  -webkit-text-fill-color: #2c3e50 !important;
+  caret-color: #2c3e50;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* BUTTON */
+
+.login-primary {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(90deg,
+      var(--primary-color),
+      #8e94f2);
+  transition: transform 0.15s ease;
+}
+
+.login-primary:hover {
+  transform: translateY(-1px);
+}
+
+/* FOOTER */
+
+.login-footer {
+  margin-top: 1.6rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.login-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .login-page {
+    padding: 2rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Center content on mobile */
+  }
+
+  .login-left-container {
+    margin-right: 0;
+    margin-bottom: 2rem;
+    height: auto;
+    /* Allow auto height on mobile if needed */
+  }
+}
+
+/* RIGHT CONTAINER */
+.login-right-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* Align to right */
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  padding-right: 8vw;
+  /* Shift carousel more to the right */
+}
+
+/* HOME LINK */
+.home-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  /* Normal weight for subtlety */
+  color: var(--text-color);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  background: transparent;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(0, 0, 0, 0.3);
+  text-underline-offset: 4px;
+
+  /* Position directly under carousel - aligned with dots */
+  position: absolute;
+  top: calc(50% + 140px);
+  right: 8vw;
+  z-index: 20;
+}
+
+.home-link:hover {
+  opacity: 1;
+  color: var(--primary-color);
+  text-decoration-color: var(--primary-color);
+  transform: translateX(-2px);
+  /* Slight left nudge */
+}
+
+.home-icon {
+  font-size: 1.2rem;
+}
+
+/* DARK THEME ADAPTATIONS */
+[data-theme="dark"] .auth-card {
+  /* Lighter amber/golden for front post-it in dark mode */
+  background: #4a4028;
+  background-image:
+    linear-gradient(160deg, #4a4028 0%, #3d3420 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter'%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    5px 10px 15px rgba(0, 0, 0, 0.3);
+  color: rgba(255, 225, 150, 0.95);
+  /* Warm light text */
+}
+
+[data-theme="dark"] .auth-card.back {
+  background: #2f2818;
+  background-image:
+    linear-gradient(160deg, #2f2818 0%, #27211a 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulance type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter'%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  /* No filter - use solid darker color to prevent animation flicker */
+}
+
+[data-theme="dark"] .login-title {
+  color: rgba(255, 225, 150, 1);
+}
+
+[data-theme="dark"] .login-fields label {
+  color: rgba(255, 225, 150, 0.8);
+}
+
+[data-theme="dark"] .input-box {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 225, 150, 0.2);
+}
+
+[data-theme="dark"] .input-box input {
+  color: rgba(255, 225, 150, 0.95);
+}
+
+/* THEME TOGGLE BUTTON */
+.theme-toggle-btn {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100;
+  font-size: 1.2rem;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0) scale(1);
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+  background: rgba(10, 10, 10, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

@@ -34,3 +34,10 @@ async def list_all(
     sort: str = Query("newest")
 ):
     return await list_notes(get_user(token), search, sort)
+
+@router.put("/{note_id}")
+async def update(note_id: str, data: NoteCreate, token: str = Query(...)):
+    result = await update_note(note_id, get_user(token), data)
+    if not result:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return {"message": "Note updated"}

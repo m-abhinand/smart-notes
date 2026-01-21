@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Notes from "./pages/Notes";
+import Welcome from "./pages/Welcome";
 import { lightTheme } from "./theme";
 
 function App() {
@@ -10,7 +11,7 @@ function App() {
   const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
 
-  // Load token and email from localStorage on page load
+  // Load token, email, and theme from localStorage on page load
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedEmail = localStorage.getItem("userEmail");
@@ -18,7 +19,10 @@ function App() {
       setToken(savedToken);
       setUserEmail(savedEmail);
     }
-    document.documentElement.setAttribute("data-theme", "light");
+    
+    // Load and apply saved theme
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
   // Save token and email to localStorage on login
@@ -36,11 +40,12 @@ function App() {
     localStorage.removeItem("userEmail");
     setToken(null);
     setUserEmail("");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
     <Routes>
+      <Route path="/" element={<Welcome />} />
       <Route
         path="/login"
         element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/notes" replace />}
@@ -53,8 +58,7 @@ function App() {
         path="/notes"
         element={token ? <Notes token={token} userEmail={userEmail} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
       />
-      <Route path="/" element={<Navigate to={token ? "/notes" : "/login"} replace />} />
-      <Route path="*" element={<Navigate to={token ? "/notes" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

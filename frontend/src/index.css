@@ -54,24 +54,33 @@
 }
 
 [data-theme="dark"] {
-  --background-color: #242424;
-  --text-color: rgba(255, 255, 255, 0.87);
-  --primary-color: #646cff;
-  --secondary-color: #1a1a1a;
-  --border-color: #333333;
+  --background-color: #000000;
+  /* Pitch black */
+  --text-color: rgba(255, 255, 255, 0.9);
+  /* Brighter text */
+  --primary-color: #7c85ff;
+  /* Slightly brighter primary */
+  --secondary-color: #0a0a0a;
+  /* Almost black */
+  --border-color: #1a1a1a;
+  /* Very dark gray */
 
-  /* card frosted-bg */
-  --card-bg-color: rgba(24, 24, 24, 0.6);
+  /* card frosted-bg - darker */
+  --card-bg-color: rgba(10, 10, 10, 0.7);
 
-  /* menu frosted-bg for dark theme - slightly darker so blur shows */
-  --menu-bg-color: rgba(24, 24, 24, 0.6);
-  --menu-border-color: rgba(255, 255, 255, 0.1);
+  /* menu frosted-bg for dark theme - match cards */
+  --menu-bg-color: rgba(10, 10, 10, 0.7);
+  --menu-border-color: rgba(255, 255, 255, 0.08);
 
-  /* icon colors in dark mode (tuned for contrast) */
-  --icon-color-notes: #f8d66b;
-  --icon-color-tasks: #3ed06a;
-  --icon-color-locked: #ff7b7b;
-  --icon-color-trash: #b0b0b5;
+  /* icon colors in dark mode (brighter for contrast) */
+  --icon-color-notes: #ffd966;
+  /* Brighter yellow */
+  --icon-color-tasks: #4ade80;
+  /* Brighter green */
+  --icon-color-locked: #ff8787;
+  /* Brighter red */
+  --icon-color-trash: #c0c0c5;
+  /* Brighter gray */
 }
 
 a {

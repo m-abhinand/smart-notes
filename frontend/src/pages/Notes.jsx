@@ -6,6 +6,8 @@ import Menu from "../components/Menu";
 import ProfileDrop from "../components/ProfileDrop";
 import Search from "../components/Search";
 import NoteOpen from "../components/NoteOpen";
+import Notification from "../components/Notification";
+import SignOutModal from "../components/SignOutModal";
 import "./Notes.css";
 
 export default function Notes({ token, userEmail, onLogout }) {
@@ -16,9 +18,8 @@ export default function Notes({ token, userEmail, onLogout }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [selectedNote, setSelectedNote] = useState(null);
-  const [currentBackground, setCurrentBackground] = useState(() => {
-    return localStorage.getItem('appBackground') || '';
-  });
+  const [notification, setNotification] = useState("");
+  const [showSignOut, setShowSignOut] = useState(false);
 
   const fetchNotes = async () => {
     try {
@@ -52,23 +53,57 @@ export default function Notes({ token, userEmail, onLogout }) {
     setMenuCollapsed(collapsed);
   };
 
-  // Handle background change
-  const handleBackgroundChange = (bgValue) => {
-    setCurrentBackground(bgValue);
-    localStorage.setItem('appBackground', bgValue);
-  };
-
-  // Apply background style
+  // Apply grid paper background
   useEffect(() => {
-    if (currentBackground) {
-       document.body.style.background = currentBackground;
-       document.body.style.backgroundSize = 'cover';
-       document.body.style.backgroundAttachment = 'fixed';
+    const theme = document.documentElement.getAttribute('data-theme');
+    const isDark = theme === 'dark';
+    
+    if (isDark) {
+      // Dark theme - pitch black with subtle grid
+      document.body.style.backgroundColor = '#000000';
+      document.body.style.backgroundImage = `
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
+      `;
     } else {
-       // Reset to default variable
-       document.body.style.background = 'var(--background-color)';
+      // Light theme - warm paper with grid
+      document.body.style.backgroundColor = '#fdfbf7';
+      document.body.style.backgroundImage = `
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
+      `;
     }
-  }, [currentBackground]);
+    document.body.style.backgroundSize = '20px 20px';
+    document.body.style.backgroundAttachment = 'fixed';
+    
+    // Listen for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const newTheme = document.documentElement.getAttribute('data-theme');
+          const newIsDark = newTheme === 'dark';
+          
+          if (newIsDark) {
+            document.body.style.backgroundColor = '#000000';
+            document.body.style.backgroundImage = `
+              linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
+            `;
+          } else {
+            document.body.style.backgroundColor = '#fdfbf7';
+            document.body.style.backgroundImage = `
+              linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
+            `;
+          }
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
 
   const containerStyle = useMemo(() => {
     const root = getComputedStyle(document.documentElement);
@@ -80,6 +115,17 @@ export default function Notes({ token, userEmail, onLogout }) {
     const menuW = menuCollapsed ? collapsedWidth : openWidth;
     return { paddingLeft: `${menuLeft + menuW + gap}px` };
   }, [menuCollapsed]);
+
+  const updateNote = async (id, updatedData) => {
+    try {
+      await api.put(`/notes/${id}?token=${token}`, updatedData);
+      fetchNotes();
+      setSelectedNote((prev) => ({ ...prev, ...updatedData }));
+      setNotification("Note saved successfully");
+    } catch (error) {
+      console.error("Failed to update note", error);
+    }
+  };
 
   return (
     <>
@@ -113,10 +159,11 @@ export default function Notes({ token, userEmail, onLogout }) {
           {dropdownOpen && (
             <ProfileDrop 
               userEmail={userEmail} 
-              onLogout={onLogout}
+              onLogout={() => {
+                setDropdownOpen(false);
+                setShowSignOut(true);
+              }}
               onClose={() => setDropdownOpen(false)}
-              onBackgroundChange={handleBackgroundChange}
-              currentBackground={currentBackground}
             />
           )}
         </div>
@@ -141,25 +188,26 @@ export default function Notes({ token, userEmail, onLogout }) {
             ))}
           </ul>
         )}
-        <button
-          className="floating-add-button"
-          onClick={() => setShowNewNote(true)}
-          aria-label="Create new note"
-        >
-          <TbPlus />
-        </button>
-        {showNewNote && (
-          <NewNote
-            onClose={() => setShowNewNote(false)}
-            onCreate={createNote}
-          />
-        )}
+        <NewNote
+          onClose={() => setShowNewNote(false)}
+          onCreate={createNote}
+        />
         {selectedNote && (
           <NoteOpen 
             note={selectedNote} 
             onClose={() => setSelectedNote(null)} 
+            onUpdate={updateNote}
           />
         )}
+        <Notification 
+          message={notification} 
+          onClose={() => setNotification("")} 
+        />
+        <SignOutModal 
+          isOpen={showSignOut}
+          onClose={() => setShowSignOut(false)}
+          onConfirm={onLogout}
+        />
       </div>
     </>
   );

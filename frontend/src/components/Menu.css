@@ -31,6 +31,21 @@
   /* ensure padding/border included in width */
   overflow-x: hidden;
   /* prevent horizontal scrolling */
+
+  /* Rise up animation */
+  animation: menuRiseUp 0.5s ease-out;
+}
+
+@keyframes menuRiseUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* keep the collapsed width but avoid changing inner alignment abruptly.
@@ -225,15 +240,60 @@
   padding-right: 1rem;
 }
 
-/* ACTIVE STATE - Full Row Highlight */
+/* ACTIVE STATE - Category-Specific Highlight */
 .menu-item.active {
-  background: #1a1a1a;
-  /* Black background */
   color: white;
 }
 
 .menu-item.active .menu-label {
   font-weight: 700;
+}
+
+/* Active state with section colors */
+.menu-item.notes.active {
+  background: var(--icon-color-notes);
+  /* Yellow */
+}
+
+.menu-item.tasks.active {
+  background: var(--icon-color-tasks);
+  /* Green */
+}
+
+.menu-item.locked.active {
+  background: var(--icon-color-locked);
+  /* Red */
+}
+
+.menu-item.trash.active {
+  background: var(--icon-color-trash);
+  /* Gray */
+}
+
+/* Make icon white when active for better contrast */
+.menu-item.active .menu-icon {
+  color: white !important;
+}
+
+/* Dark theme - use softer, muted colors for active states to avoid eye strain */
+[data-theme="dark"] .menu-item.notes.active {
+  background: #b8a450;
+  /* Muted gold/yellow */
+}
+
+[data-theme="dark"] .menu-item.tasks.active {
+  background: #3a9b5c;
+  /* Muted green */
+}
+
+[data-theme="dark"] .menu-item.locked.active {
+  background: #b85858;
+  /* Muted red */
+}
+
+[data-theme="dark"] .menu-item.trash.active {
+  background: #7a7a7f;
+  /* Muted gray */
 }
 
 /* Ensure icons in active state keep their original category colors */
