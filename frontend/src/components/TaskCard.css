@@ -1,8 +1,22 @@
+/* Rise up animation keyframes */
+@keyframes riseUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .task-card {
+  position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.85rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
   background: var(--card-bg-color);
   border: 1px solid var(--menu-border-color);
   border-radius: 10px;
@@ -13,6 +27,50 @@
     border-color 0.12s ease;
   width: 100%;
   box-sizing: border-box;
+  min-height: 110px;
+  max-height: 110px;
+  height: 110px;
+  overflow: hidden;
+
+  /* Staggered rise up animation */
+  animation: riseUp 0.4s ease-out backwards;
+}
+
+/* Stagger animation for task cards */
+.task-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.task-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.task-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.task-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.task-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.task-card:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.task-card:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.task-card:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+.task-card:nth-child(n+9) {
+  animation-delay: 0.45s;
 }
 
 /* Hover */
@@ -22,109 +80,195 @@
   border-color: var(--primary-color);
 }
 
-/* LEFT */
-
-.task-left {
-  display: flex;
-  align-items: flex-start;
-}
-
-.task-left input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--primary-color);
-  margin: 2px 0;
-}
-
-.task-checkbox {
+/* DELETE BUTTON - Top Right Corner */
+.task-delete {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
   background: transparent;
   border: none;
+  color: var(--text-color);
+  opacity: 0;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  z-index: 3;
+}
+
+.task-card:hover .task-delete {
+  opacity: 0.6;
+}
+
+.task-delete:hover {
+  background: rgba(255, 0, 0, 0.08);
+  color: #e25555;
+  opacity: 1 !important;
+}
+
+/* TOP ROW: Checkbox Icon + Title + Priority Badge */
+.task-top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  width: 100%;
+  padding-right: 1.5rem;
+}
+
+.task-checkbox-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   font-size: 1.25rem;
   color: var(--primary-color);
-  padding: 4px;
-  border-radius: 6px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
 }
 
-.task-checkbox:hover {
-  background: rgba(100, 108, 255, 0.08);
+.task-checkbox-icon:hover {
+  transform: scale(1.1);
 }
 
-/* BODY */
+.task-checkbox-icon .checkbox-empty {
+  opacity: 0.6;
+}
 
-.task-body {
-  flex: 1;
-  min-width: 0;
+.task-checkbox-icon .checkbox-filled {
+  opacity: 1;
+}
+
+/* Priority Badge */
+.task-header-row {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
 }
+
+.task-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.task-priority-badge.priority-1 {
+  background: #A5D6A7;
+  color: #1B5E20;
+}
+
+.task-priority-badge.priority-2 {
+  background: #FFCC80;
+  color: #E65100;
+}
+
+.task-priority-badge.priority-3 {
+  background: #EF9A9A;
+  color: #B71C1C;
+}
+
+[data-theme="dark"] .task-priority-badge.priority-1 {
+  background: rgba(102, 187, 106, 0.2);
+  color: #66BB6A;
+  border: 1px solid rgba(102, 187, 106, 0.3);
+}
+
+[data-theme="dark"] .task-priority-badge.priority-2 {
+  background: rgba(255, 167, 38, 0.2);
+  color: #FFA726;
+  border: 1px solid rgba(255, 167, 38, 0.3);
+}
+
+[data-theme="dark"] .task-priority-badge.priority-3 {
+  background: rgba(239, 83, 80, 0.2);
+  color: #EF5350;
+  border: 1px solid rgba(239, 83, 80, 0.3);
+}
+
+/* TITLE - In Top Row */
 
 .task-title {
   font-weight: 700;
   color: var(--text-color);
-  font-size: 1rem;
-  line-height: 1.25;
-  word-break: break-word;
-}
-
-.task-desc {
-  color: var(--text-color);
-  opacity: 0.8;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   line-height: 1.3;
+  word-break: break-word;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
-/* META */
+/* BOTTOM ROW: Date and Timer Badge */
+
+.task-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: auto;
+}
 
 .task-meta {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 0.35rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  /* Vertical spacing between due date and time left */
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--menu-border-color);
+  /* Subtle separator from content */
 }
 
-.task-due,
+.task-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  opacity: 0.75;
+  font-weight: 500;
+}
+
 .task-timer {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.82rem;
-  opacity: 0.8;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(100, 108, 255, 0.08);
+  color: var(--primary-color);
+  font-weight: 600;
+  opacity: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .task-timer {
+  background: rgba(124, 133, 255, 0.15);
 }
 
 .task-timer.overdue {
+  background: rgba(226, 85, 85, 0.1);
   color: #e25555;
-  opacity: 1;
 }
 
-/* ACTIONS */
+/* ACTIONS - Removed, delete button is now in top-right */
 
 .task-actions {
-  display: flex;
-  align-items: center;
-}
-
-.task-delete {
-  background: transparent;
-  border: none;
-  color: var(--text-color);
-  opacity: 0.85;
-  padding: 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1.05rem;
-}
-
-.task-delete:hover {
-  background: rgba(255, 0, 0, 0.06);
-  color: #e25555;
+  display: none;
 }
 
 /* COMPLETED */

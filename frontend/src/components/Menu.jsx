@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { TbFileText, TbChecklist, TbLock, TbTrash, TbChevronLeft, TbChevronRight, TbSettings } from "react-icons/tb";
 import "./Menu.css";
 
-export default function Menu({ onSelectCategory, onCollapseChange }) {
+export default function Menu({ onSelectCategory, onCollapseChange, onLockedClick }) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -23,6 +23,13 @@ export default function Menu({ onSelectCategory, onCollapseChange }) {
 
   const go = (id) => {
     if (onSelectCategory) onSelectCategory(id);
+    
+    // Special handling for locked - show PIN modal instead of navigating
+    if (id === "locked" && onLockedClick) {
+      onLockedClick();
+      return;
+    }
+    
     // basic routing mapping (other routes can be implemented later)
     if (id === "notes") navigate("/notes");
     else navigate(`/${id}`);

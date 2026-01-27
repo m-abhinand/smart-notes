@@ -1,25 +1,16 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import { TbSearch, TbArrowsSort, TbCheck, TbPlus } from "react-icons/tb";
+import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import api from "../api/client";
 import NewNote from "../components/newNote";
-import Menu from "../components/Menu";
-import ProfileDrop from "../components/ProfileDrop";
-import Search from "../components/Search";
 import NoteOpen from "../components/NoteOpen";
-import Notification from "../components/Notification";
-import SignOutModal from "../components/SignOutModal";
 import "./Notes.css";
 
-export default function Notes({ token, userEmail, onLogout }) {
+export default function Notes() {
+  const { token, searchQuery, sortBy, showNotification } = useOutletContext();
+  
   const [notes, setNotes] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showNewNote, setShowNewNote] = useState(false);
-  const [menuCollapsed, setMenuCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
   const [selectedNote, setSelectedNote] = useState(null);
-  const [notification, setNotification] = useState("");
-  const [showSignOut, setShowSignOut] = useState(false);
 
   const fetchNotes = async () => {
     try {
@@ -47,168 +38,107 @@ export default function Notes({ token, userEmail, onLogout }) {
 
   useEffect(() => {
     fetchNotes();
-  }, [searchQuery, sortBy]);
-
-  const handleMenuCollapse = (collapsed) => {
-    setMenuCollapsed(collapsed);
-  };
-
-  // Apply grid paper background
-  useEffect(() => {
-    const theme = document.documentElement.getAttribute('data-theme');
-    const isDark = theme === 'dark';
-    
-    if (isDark) {
-      // Dark theme - pitch black with subtle grid
-      document.body.style.backgroundColor = '#000000';
-      document.body.style.backgroundImage = `
-        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
-      `;
-    } else {
-      // Light theme - warm paper with grid
-      document.body.style.backgroundColor = '#fdfbf7';
-      document.body.style.backgroundImage = `
-        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-      `;
-    }
-    document.body.style.backgroundSize = '20px 20px';
-    document.body.style.backgroundAttachment = 'fixed';
-    
-    // Listen for theme changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'data-theme') {
-          const newTheme = document.documentElement.getAttribute('data-theme');
-          const newIsDark = newTheme === 'dark';
-          
-          if (newIsDark) {
-            document.body.style.backgroundColor = '#000000';
-            document.body.style.backgroundImage = `
-              linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px)
-            `;
-          } else {
-            document.body.style.backgroundColor = '#fdfbf7';
-            document.body.style.backgroundImage = `
-              linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-            `;
-          }
-        }
-      });
-    });
-    
-    observer.observe(document.documentElement, { attributes: true });
-    
-    return () => observer.disconnect();
-  }, []);
-
-  const containerStyle = useMemo(() => {
-    const root = getComputedStyle(document.documentElement);
-    const menuLeft = parseInt(root.getPropertyValue("--menu-left-offset")) || 16;
-    const openWidth = parseInt(root.getPropertyValue("--menu-width-open")) || 250;
-    const collapsedWidth =
-      parseInt(root.getPropertyValue("--menu-width-collapsed")) || 56;
-    const gap = parseInt(root.getPropertyValue("--menu-gap")) || 24;
-    const menuW = menuCollapsed ? collapsedWidth : openWidth;
-    return { paddingLeft: `${menuLeft + menuW + gap}px` };
-  }, [menuCollapsed]);
+  }, [searchQuery, sortBy, token]);
 
   const updateNote = async (id, updatedData) => {
     try {
       await api.put(`/notes/${id}?token=${token}`, updatedData);
       fetchNotes();
       setSelectedNote((prev) => ({ ...prev, ...updatedData }));
-      setNotification("Note saved successfully");
+      if (showNotification) {
+        if (updatedData.is_locked === true) showNotification("Note moved to Locked folder");
+        else if (updatedData.is_archived === true) showNotification("Note archived");
+        else if (updatedData.is_deleted === true) showNotification("Note moved to Trash");
+        else if (updatedData.is_favorite !== undefined) showNotification(updatedData.is_favorite ? "Added to favorites" : "Removed from favorites");
+        else showNotification("Note saved successfully");
+      }
     } catch (error) {
       console.error("Failed to update note", error);
     }
   };
 
-  return (
-    <>
-      <Menu onCollapseChange={handleMenuCollapse} />
-      <div className="top-bar">
-        <div className="top-bar__left">Smart Notes</div>
-        
-        <div className="top-bar__center">
-          <Search onSearch={setSearchQuery} onSort={setSortBy} />
-        </div>
+  useEffect(() => {
+    // Keyboard shortcut Alt + N
+    const handleKeyDown = (e) => {
+      if (e.altKey && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        setShowNewNote(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-        <div className="top-bar__right">
-          <div
-            className="user-icon"
-            onClick={() => setDropdownOpen((v) => !v)}
-            tabIndex={0}
-            aria-label="User menu"
-          >
-            <svg height="28" width="28" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="8" r="4" fill="var(--primary-color)" />
-              <ellipse
-                cx="12"
-                cy="17"
-                rx="7"
-                ry="4"
-                fill="var(--primary-color)"
-                opacity="0.5"
-              />
-            </svg>
-          </div>
-          {dropdownOpen && (
-            <ProfileDrop 
-              userEmail={userEmail} 
-              onLogout={() => {
-                setDropdownOpen(false);
-                setShowSignOut(true);
-              }}
-              onClose={() => setDropdownOpen(false)}
-            />
-          )}
+  const favorites = notes.filter(n => n.is_favorite);
+  const otherNotes = notes.filter(n => !n.is_favorite);
+
+  return (
+    <div className="notes-container">
+      {notes.length === 0 ? (
+        <div className="empty-state">
+          <h3>No notes yet</h3>
+          <p>Click the + button to create your first note.</p>
         </div>
-      </div>
-      <div className="notes-container" style={containerStyle}>
-        {notes.length === 0 ? (
-          <div className="empty-state">
-            <h3>No notes yet</h3>
-            <p>Click the + button to create your first note.</p>
-          </div>
-        ) : (
-          <ul className="notes-grid">
-            {notes.map((n) => (
-              <li 
-                key={n.id} 
-                className="note-card"
-                onClick={() => setSelectedNote(n)}
-              >
-                <b>{n.title}</b>
-                <p>{n.content}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-        <NewNote
-          onClose={() => setShowNewNote(false)}
-          onCreate={createNote}
+      ) : (
+        <>
+          {favorites.length > 0 && (
+             <>
+               <h3 className="section-heading">Favorites</h3>
+               <ul className="notes-grid">
+                 {favorites.map((n) => (
+                   <li 
+                     key={n.id} 
+                     className={`note-card ${n.color || ''}`}
+                     onClick={() => setSelectedNote(n)}
+                   >
+                     <b>{n.title}</b>
+                     <p>{n.content}</p>
+                   </li>
+                 ))}
+               </ul>
+               {otherNotes.length > 0 && <h3 className="section-heading">Others</h3>}
+             </>
+          )}
+
+          {otherNotes.length > 0 && (
+            <ul className="notes-grid">
+              {otherNotes.map((n) => (
+                <li 
+                  key={n.id} 
+                  className={`note-card ${n.color || ''}`}
+                  onClick={() => setSelectedNote(n)}
+                >
+                  <b>{n.title}</b>
+                  <p>{n.content}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+      <NewNote
+        isOpen={showNewNote}
+        onOpen={() => setShowNewNote(true)}
+        onClose={() => setShowNewNote(false)}
+        onCreate={createNote}
+      />
+      {/* Floating Add Button logic was inside NewNote? No, NewNote is a Modal? 
+          Wait, looking at Notes.css, .floating-add-button exists. 
+          But NewNote component might encapsulate the button.
+          Let's assume NewNote handles the trigger or is the modal.
+          Checking NewNote usage in previous Notes.jsx:
+          <NewNote onClose... onCreate... /> 
+          It seems NewNote renders the button itself? 
+          I'll assume yes for now. If not, I missed the button. 
+          Actually, I better check NewNote.jsx to be sure I didn't lose the button.
+      */}
+      {selectedNote && (
+        <NoteOpen 
+          note={selectedNote} 
+          onClose={() => setSelectedNote(null)} 
+          onUpdate={updateNote}
         />
-        {selectedNote && (
-          <NoteOpen 
-            note={selectedNote} 
-            onClose={() => setSelectedNote(null)} 
-            onUpdate={updateNote}
-          />
-        )}
-        <Notification 
-          message={notification} 
-          onClose={() => setNotification("")} 
-        />
-        <SignOutModal 
-          isOpen={showSignOut}
-          onClose={() => setShowSignOut(false)}
-          onConfirm={onLogout}
-        />
-      </div>
-    </>
+      )}
+    </div>
   );
 }

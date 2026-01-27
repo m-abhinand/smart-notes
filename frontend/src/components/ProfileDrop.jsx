@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './ProfileDrop.css';
 
-export default function ProfileDrop({ userEmail, onLogout, onClose }) {
+export default function ProfileDrop({ userEmail, onLogout, onClose, onShowShortcuts }) {
     const dropdownRef = useRef(null);
     const [currentTheme, setCurrentTheme] = useState(
         localStorage.getItem('theme') || 'light'
@@ -57,6 +57,9 @@ export default function ProfileDrop({ userEmail, onLogout, onClose }) {
             </div>
 
             <div className="profile-actions">
+                <button className="shortcuts-btn" onClick={onShowShortcuts}>
+                    Keyboard Shortcuts
+                </button>
                 <button className="logout-btn" onClick={onLogout}>
                     Sign Out
                 </button>

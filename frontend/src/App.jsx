@@ -5,6 +5,8 @@ import Register from "./pages/Register";
 import Notes from "./pages/Notes";
 import Tasks from "./pages/Tasks";
 import Welcome from "./pages/Welcome";
+import Dashboard from "./pages/Dashboard";
+import Locked from "./pages/Locked";
 import { lightTheme } from "./theme";
 
 function App() {
@@ -55,14 +57,16 @@ function App() {
         path="/register"
         element={!token ? <Register /> : <Navigate to="/notes" replace />}
       />
+      
+      {/* Protected Layout Routes */}
       <Route
-        path="/notes"
-        element={token ? <Notes token={token} userEmail={userEmail} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
-      />
-      <Route
-        path="/tasks"
-        element={token ? <Tasks token={token} userEmail={userEmail} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
-      />
+        element={token ? <Dashboard token={token} userEmail={userEmail} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+      >
+        <Route path="/notes" element={<Notes />} />
+        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/locked" element={<Locked />} />
+      </Route>
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

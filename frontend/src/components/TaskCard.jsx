@@ -1,5 +1,5 @@
 import React from "react";
-import { TbTrash, TbCalendar } from "react-icons/tb";
+import { TbTrash, TbCalendar, TbCircle, TbCircleCheckFilled } from "react-icons/tb";
 import "./TaskCard.css";
 
 function getTimeLeft(dueDate) {
@@ -37,7 +37,7 @@ export default function TaskCard({ task, onToggle, onDelete, onOpen }) {
 
   return (
     <div
-      className={`task-card ${task.completed ? "completed" : ""}`}
+      className={`task-card ${task.completed ? "completed" : ""} ${task.priority ? `priority-${task.priority}` : ''}`}
       title={task.title}
       role="button"
       tabIndex={0}
@@ -45,63 +45,73 @@ export default function TaskCard({ task, onToggle, onDelete, onOpen }) {
       onKeyDown={handleKeyDown}
       aria-pressed={!!task.completed}
     >
-      {/* LEFT — native checkbox for reliability */}
-      <div className="task-left">
-        <input
-          type="checkbox"
-          checked={!!task.completed}
-          onChange={(e) => {
+      {/* DELETE BUTTON - Top Right Corner */}
+      <button
+        className="task-delete"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete && onDelete();
+        }}
+        aria-label="Delete task"
+      >
+        <TbTrash />
+      </button>
+
+      {/* TOP ROW: Checkbox Icon + Title + Priority Badge */}
+      <div className="task-top-row">
+        <div className="task-checkbox-icon"
+          onClick={(e) => {
             e.stopPropagation();
             onToggle && onToggle();
           }}
+          role="button"
+          tabIndex={0}
           aria-label={task.completed ? "Mark as incomplete" : "Mark as complete"}
-        />
-      </div>
-
-      {/* BODY */}
-      <div className="task-body">
+        >
+          {task.completed ? (
+            <TbCircleCheckFilled className="checkbox-filled" />
+          ) : (
+            <TbCircle className="checkbox-empty" />
+          )}
+        </div>
+        
         <div className="task-title">{task.title}</div>
-
-        {task.description && <div className="task-desc">{task.description}</div>}
-
-        {task.due_date && (
-          <div className="task-meta">
-            <div className="task-due">
-              <TbCalendar />
-              <span>
-                {new Date(task.due_date).toLocaleDateString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-
-            {timeLeft && (
-              <div
-                className={`task-timer ${
-                  timeLeft === "Overdue" ? "overdue" : ""
-                }`}
-              >
-                {timeLeft}
-              </div>
-            )}
-          </div>
+        
+        {task.priority && (
+          <span 
+            className={`task-priority-badge priority-${task.priority}`}
+            title={`Priority: ${task.priority === 3 ? 'High' : task.priority === 2 ? 'Medium' : 'Low'}`}
+          >
+            {task.priority === 3 ? 'H' : task.priority === 2 ? 'M' : 'L'}
+          </span>
         )}
       </div>
 
-      {/* ACTIONS */}
-      <div className="task-actions">
-        <button
-          className="task-delete"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete && onDelete();
-          }}
-          aria-label="Delete task"
-        >
-          <TbTrash />
-        </button>
-      </div>
+      {/* BOTTOM ROW: Date (left) and Timer Badge (right) */}
+      {task.due_date && (
+        <div className="task-bottom-row">
+          <div className="task-due">
+            <TbCalendar />
+            <span>
+              {new Date(task.due_date).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          </div>
+
+          {timeLeft && (
+            <div
+              className={`task-timer ${
+                timeLeft === "Overdue" ? "overdue" : ""
+              }`}
+            >
+              {timeLeft}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

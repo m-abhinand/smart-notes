@@ -1,36 +1,73 @@
-import { useState } from "react";
-import { TbX, TbDeviceFloppy } from "react-icons/tb";
+import { useState, useEffect } from "react";
+import { TbX, TbDeviceFloppy, TbCornerDownLeft } from "react-icons/tb";
 import "./newNote.css";
 
-export default function NewNote({ onClose, onCreate }) {
+export default function NewNote({ onClose, onCreate, isOpen, onOpen }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  
+  const isControlled = isOpen !== undefined;
+  const isExpanded = isControlled ? isOpen : internalExpanded;
 
-  const handleCreate = () => {
-    if (title.trim() && content.trim()) {
-      onCreate({ title, content });
-      setTitle("");
-      setContent("");
-      setIsExpanded(false);
-      // No delay needed for direct close with this design
-      onClose(); 
-    }
-  };
-
-  const handleClickInitial = () => {
-    setIsExpanded(true);
+  const handleOpen = () => {
+    if (isControlled) onOpen && onOpen();
+    else setInternalExpanded(true);
   };
 
   const handleClose = () => {
-    setIsExpanded(false);
-    onClose();
+    if (isControlled) onClose && onClose();
+    else {
+      setInternalExpanded(false);
+      onClose && onClose();
+    }
   };
 
+  const handleCreate = () => {
+    // Treat empty title as valid by generating a default one
+    let finalTitle = title.trim();
+    if (!finalTitle) {
+      finalTitle = `Note - ${new Date().toLocaleString()}`;
+    }
+
+    if (finalTitle || content.trim()) {
+      onCreate({ title: finalTitle, content: content.trim() });
+      setTitle("");
+      setContent("");
+      handleClose();
+    }
+  };
+
+  // Shortcut Ctrl + Enter to save, Esc to close
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isExpanded) return;
+      
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleCreate();
+      }
+      
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isExpanded, title, content]); // Dependencies for state
+
   return (
-    <div className={`new-note-container ${isExpanded ? "expanded" : ""}`}>
+    <div 
+      className={`new-note-container ${isExpanded ? "expanded" : ""}`}
+      onClick={(e) => {
+        if (isExpanded && e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
+    >
       {!isExpanded ? (
-        <div className="new-note-trigger" onClick={handleClickInitial}>
+        <div className="new-note-trigger" onClick={handleOpen}>
           <span className="trigger-text">What's on your mind?</span>
         </div>
       ) : (
@@ -43,10 +80,12 @@ export default function NewNote({ onClose, onCreate }) {
               placeholder="Give it a title..."
             />
             <div className="note-header-actions">
+              <span className="shortcut-hint">Ctrl + <TbCornerDownLeft /></span>
               <button 
                 className="note-modal-save" 
                 onClick={handleCreate}
                 aria-label="Create note"
+                title="Save (Ctrl + Enter)"
               >
                 <TbDeviceFloppy />
               </button>

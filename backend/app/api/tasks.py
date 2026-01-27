@@ -37,9 +37,10 @@ async def list_all(
     token: str = Query(...),
     search: Optional[str] = Query(None),
     completed: Optional[bool] = Query(None),
-    sort: str = Query("newest")
+    sort: str = Query("newest"),
+    locked: bool = Query(False)
 ):
-    return await list_tasks(get_user(token), search, completed, sort)
+    return await list_tasks(get_user(token), search, completed, sort, locked)
 
 
 @router.get("/{task_id}", response_model=TaskOut)

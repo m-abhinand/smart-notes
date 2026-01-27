@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from jose import jwt, JWTError
 from app.core.config import settings
-from app.schemas.note import NoteCreate
+from app.schemas.note import NoteCreate, NoteUpdate
 from app.services.note_services import (
     create_note,
     list_notes,
@@ -31,12 +31,13 @@ async def create(data: NoteCreate, token: str = Query(...)):
 async def list_all(
     token: str = Query(...),
     search: str = Query(None),
-    sort: str = Query("newest")
+    sort: str = Query("newest"),
+    locked: bool = Query(False)
 ):
-    return await list_notes(get_user(token), search, sort)
+    return await list_notes(get_user(token), search, sort, locked)
 
 @router.put("/{note_id}")
-async def update(note_id: str, data: NoteCreate, token: str = Query(...)):
+async def update(note_id: str, data: NoteUpdate, token: str = Query(...)):
     result = await update_note(note_id, get_user(token), data)
     if not result:
         raise HTTPException(status_code=404, detail="Note not found")

@@ -5,6 +5,8 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -12,18 +14,89 @@
     animation: fadeIn 0.2s ease-out;
 }
 
+.note-modal-container {
+    position: relative;
+    width: 600px;
+    max-width: 85vw;
+    /* Leave room for strip */
+    height: 70vh;
+    animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .note-modal-content {
     background: var(--background-color);
-    width: 600px;
-    max-width: 90vw;
-    height: 70vh;
+    width: 100%;
+    height: 100%;
     border-radius: 12px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 10;
+}
+
+.note-action-strip {
+    position: absolute;
+    top: 20px;
+    right: -50px;
+    width: 50px;
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 12px;
+    z-index: 5;
+    box-shadow: 4px 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.25rem;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+    transform: translateX(2px);
+}
+
+.action-btn.delete:hover {
+    color: #ef5350;
+    background: rgba(239, 83, 80, 0.1);
+}
+
+.action-divider {
+    height: 1px;
+    width: 24px;
+    background: var(--border-color);
+    margin: 4px 0;
+    opacity: 0.5;
+}
+
+[data-theme="dark"] .note-action-strip {
+    background: #252525;
+    /* Slightly lighter than card #1e1e1e for contrast? Or darker? 
+                           If card is #1e1e1e, secondary is usually lighter. 
+                           Let's check theme.js/css. 
+                           Typically a paper strip would be same material or distinct. */
+    background: var(--secondary-color);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .note-modal-content {
@@ -56,6 +129,15 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.shortcut-hint {
+    font-size: 0.7rem;
+    color: var(--text-color);
+    opacity: 0.5;
+    margin-right: 0.5rem;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .note-modal-close,
@@ -96,8 +178,10 @@
 
 .note-modal-content-input {
     width: 100%;
-    height: 100%;
-    padding: 1.5rem;
+    flex: 1;
+    /* Changed from height: 100% */
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+    /* Reduced bottom padding */
     border: none;
     outline: none;
     resize: none;
@@ -106,6 +190,16 @@
     font-size: 1rem;
     line-height: 1.6;
     color: var(--text-color);
+}
+
+.note-meta-data {
+    padding: 0.5rem 1.5rem 1rem 1.5rem;
+    font-size: 0.75rem;
+    color: var(--text-color);
+    opacity: 0.5;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
 }
 
 @keyframes fadeIn {
@@ -128,4 +222,200 @@
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Color Variations */
+.note-modal-content.default {
+    /* inherit */
+}
+
+.note-modal-content.red {
+    background: #ffe5e5;
+    border-color: #ffcccc;
+}
+
+.note-modal-content.orange {
+    background: #fff4e5;
+    border-color: #ffe0cc;
+}
+
+.note-modal-content.yellow {
+    background: #fffbe5;
+    border-color: #fff5cc;
+}
+
+.note-modal-content.green {
+    background: #e5ffe9;
+    border-color: #ccffd4;
+}
+
+.note-modal-content.blue {
+    background: #e5f6ff;
+    border-color: #ccedff;
+}
+
+.note-modal-content.purple {
+    background: #f2e5ff;
+    border-color: #e5ccff;
+}
+
+.note-modal-content.gray {
+    background: #f5f5f5;
+    border-color: #e5e5e5;
+}
+
+/* Dark Theme Colors */
+[data-theme="dark"] .note-modal-content.red {
+    background: #3c1e1e;
+    border-color: #4a2a2a;
+}
+
+[data-theme="dark"] .note-modal-content.orange {
+    background: #3c2a1e;
+    border-color: #4a382a;
+}
+
+[data-theme="dark"] .note-modal-content.yellow {
+    background: #3c381e;
+    border-color: #4a462a;
+}
+
+[data-theme="dark"] .note-modal-content.green {
+    background: #1e3c23;
+    border-color: #2a4a2f;
+}
+
+[data-theme="dark"] .note-modal-content.blue {
+    background: #1e323c;
+    border-color: #2a3e4a;
+}
+
+[data-theme="dark"] .note-modal-content.purple {
+    background: #2d1e3c;
+    border-color: #382a4a;
+}
+
+[data-theme="dark"] .note-modal-content.gray {
+    background: #2d2d2d;
+    border-color: #3d3d3d;
+}
+
+/* Picker Popover */
+.color-picker-popover {
+    position: absolute;
+    right: 60px;
+    /* To the left of the strip */
+    top: 10px;
+    /* Align near palette button usually, adjust if needed */
+    background: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 120px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.95) translateX(10px);
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+}
+
+.color-picker-popover.open {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    pointer-events: auto;
+}
+
+.color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.1s;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.color-option:hover {
+    transform: scale(1.15);
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.color-option.selected {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--card-bg-color), 0 0 0 4px var(--primary-color);
+    border: none;
+}
+
+/* Define backgrounds for options to match classes */
+.color-option.default {
+    background: var(--background-color);
+    border: 2px solid var(--border-color);
+}
+
+.color-option.red {
+    background: #ffe5e5;
+}
+
+.color-option.orange {
+    background: #fff4e5;
+}
+
+.color-option.yellow {
+    background: #fffbe5;
+}
+
+.color-option.green {
+    background: #e5ffe9;
+}
+
+.color-option.blue {
+    background: #e5f6ff;
+}
+
+.color-option.purple {
+    background: #f2e5ff;
+}
+
+.color-option.gray {
+    background: #f5f5f5;
+}
+
+[data-theme="dark"] .color-option.default {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .color-option.red {
+    background: #3c1e1e;
+}
+
+[data-theme="dark"] .color-option.orange {
+    background: #3c2a1e;
+}
+
+[data-theme="dark"] .color-option.yellow {
+    background: #3c381e;
+}
+
+[data-theme="dark"] .color-option.green {
+    background: #1e3c23;
+}
+
+[data-theme="dark"] .color-option.blue {
+    background: #1e323c;
+}
+
+[data-theme="dark"] .color-option.purple {
+    background: #2d1e3c;
+}
+
+[data-theme="dark"] .color-option.gray {
+    background: #2d2d2d;
 }
